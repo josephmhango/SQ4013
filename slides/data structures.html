@@ -395,7 +395,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Professional skills for data science</h1>
-  <p class="subtitle">Data structures</p>
+  <p class="subtitle">R primitives, data structures, and indexing</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -409,287 +409,976 @@ Joseph Mhango
 <nav role="doc-toc"> 
 <h2 id="toc-title">Table of contents</h2>
 <ul>
-<li><a href="#/objectives" id="/toc-objectives">Objectives</a></li>
-<li><a href="#/basic-data-types-in-r" id="/toc-basic-data-types-in-r">Basic data types in R</a></li>
-<li><a href="#/basic-primitive-types-in-r" id="/toc-basic-primitive-types-in-r">Basic primitive types in R</a></li>
-<li><a href="#/basic-data-types-in-r-1" id="/toc-basic-data-types-in-r-1">Basic data types in R</a></li>
-<li><a href="#/basic-data-types-in-r-2" id="/toc-basic-data-types-in-r-2">Basic data types in R</a></li>
-<li><a href="#/basic-data-types-in-r-3" id="/toc-basic-data-types-in-r-3">Basic data types in R</a></li>
-<li><a href="#/basic-data-types-in-r-4" id="/toc-basic-data-types-in-r-4">Basic data types in R</a></li>
-<li><a href="#/data-with-factors" id="/toc-data-with-factors">Data with factors</a></li>
-<li><a href="#/data-with-factors-1" id="/toc-data-with-factors-1">Data with factors</a></li>
-<li><a href="#/class-and-converting-variables" id="/toc-class-and-converting-variables">class() and converting variables</a></li>
-<li><a href="#/vector-and-matrix-fun" id="/toc-vector-and-matrix-fun">Vector and Matrix fun</a></li>
-<li><a href="#/vector-and-matrix-fun-1" id="/toc-vector-and-matrix-fun-1">Vector and Matrix fun</a></li>
-<li><a href="#/vector-and-matrix-fun-2" id="/toc-vector-and-matrix-fun-2">Vector and Matrix fun</a></li>
-<li><a href="#/lists" id="/toc-lists">Lists</a></li>
-<li><a href="#/dataframes" id="/toc-dataframes">Dataframes</a></li>
-<li><a href="#/arrays" id="/toc-arrays">Arrays</a></li>
-<li><a href="#/practice-exercises" id="/toc-practice-exercises">practice exercises</a></li>
+<li><a href="#/learning-objectives" id="/toc-learning-objectives">Learning objectives</a></li>
+<li></li>
+<li><a href="#/part-1-primitive-data-types" id="/toc-part-1-primitive-data-types">Part 1 — Primitive data types</a>
+<ul>
+<li><a href="#/what-is-a-data-object" id="/toc-what-is-a-data-object">What is a data object?</a></li>
+<li><a href="#/basic-primitive-types" id="/toc-basic-primitive-types">Basic primitive types</a></li>
+<li><a href="#/checking-type-and-class" id="/toc-checking-type-and-class">Checking type and class</a></li>
+<li><a href="#/special-values" id="/toc-special-values">Special values</a>
+<ul>
+<li><a href="#/special-values" id="/toc-null">NULL</a></li>
+</ul></li>
+<li>
+<ul>
+<li><a href="#/na-missing-value" id="/toc-na-missing-value">NA (missing value)</a></li>
+</ul></li>
+<li>
+<ul>
+<li><a href="#/inf-and-nan" id="/toc-inf-and-nan">Inf and NaN</a></li>
+</ul></li>
+<li><a href="#/behaviour-of-special-values" id="/toc-behaviour-of-special-values">Behaviour of special values</a></li>
+<li><a href="#/naming-rules" id="/toc-naming-rules">Naming rules</a></li>
+<li></li>
+</ul></li>
+<li><a href="#/part-2-type-conversion" id="/toc-part-2-type-conversion">Part 2 — Type conversion</a>
+<ul>
+<li><a href="#/coercion" id="/toc-coercion">Coercion</a></li>
+<li><a href="#/manual-conversion" id="/toc-manual-conversion">Manual conversion</a></li>
+<li><a href="#/checking-and-converting-class" id="/toc-checking-and-converting-class">Checking and converting class</a></li>
+<li><a href="#/factors-categorical-data" id="/toc-factors-categorical-data">Factors (categorical data)</a>
+<ul>
+<li><a href="#/factors-categorical-data" id="/toc-unordered-factor">Unordered factor</a></li>
+</ul></li>
+<li>
+<ul>
+<li><a href="#/ordered-factor" id="/toc-ordered-factor">Ordered factor</a></li>
+</ul></li>
+<li><a href="#/dates-in-r" id="/toc-dates-in-r">Dates in R</a></li>
+<li>
+<ul>
+<li><a href="#/working-with-dates" id="/toc-working-with-dates">Working with dates</a></li>
+</ul></li>
+<li></li>
+</ul></li>
+<li><a href="#/part-3-core-data-structures" id="/toc-part-3-core-data-structures">Part 3 — Core data structures</a>
+<ul>
+<li><a href="#/the-hierarchy" id="/toc-the-hierarchy">The hierarchy</a></li>
+<li></li>
+</ul></li>
+<li><a href="#/vectors" id="/toc-vectors">Vectors</a>
+<ul>
+<li><a href="#/creating-vectors" id="/toc-creating-vectors">Creating vectors</a></li>
+<li><a href="#/vector-indexing" id="/toc-vector-indexing">Vector indexing</a></li>
+<li><a href="#/logical-indexing" id="/toc-logical-indexing">Logical indexing</a></li>
+<li><a href="#/using-which" id="/toc-using-which">Using <code>which()</code></a></li>
+<li></li>
+</ul></li>
+<li><a href="#/matrices" id="/toc-matrices">Matrices</a>
+<ul>
+<li><a href="#/creating-a-matrix" id="/toc-creating-a-matrix">Creating a matrix</a></li>
+<li><a href="#/matrix-indexing" id="/toc-matrix-indexing">Matrix indexing</a></li>
+<li></li>
+</ul></li>
+<li><a href="#/arrays" id="/toc-arrays">Arrays</a>
+<ul>
+<li><a href="#/creating-an-array" id="/toc-creating-an-array">Creating an array</a></li>
+<li><a href="#/array-indexing" id="/toc-array-indexing">Array indexing</a></li>
+<li></li>
+</ul></li>
+<li><a href="#/lists" id="/toc-lists">Lists</a>
+<ul>
+<li><a href="#/what-is-a-list-and-what-can-it-contain" id="/toc-what-is-a-list-and-what-can-it-contain">What is a list and what can it contain?</a></li>
+<li><a href="#/list-indexing" id="/toc-list-indexing">List indexing</a>
+<ul>
+<li><a href="#/list-indexing" id="/toc-key-difference">Key difference</a></li>
+</ul></li>
+<li><a href="#/nested-lists" id="/toc-nested-lists">Nested lists</a></li>
+<li></li>
+</ul></li>
+<li><a href="#/data-frames" id="/toc-data-frames">Data frames</a>
+<ul>
+<li><a href="#/creating-a-data-frame" id="/toc-creating-a-data-frame">Creating a data frame</a></li>
+<li><a href="#/data-frame-indexing" id="/toc-data-frame-indexing">Data frame indexing</a></li>
+<li><a href="#/logical-selection" id="/toc-logical-selection">Logical selection</a></li>
+<li><a href="#/using-aggregate" id="/toc-using-aggregate">Using <code>aggregate()</code></a></li>
+<li></li>
+</ul></li>
+<li><a href="#/apply-functions" id="/toc-apply-functions">Apply functions</a>
+<ul>
+<li><a href="#/what-is-a-tibble" id="/toc-what-is-a-tibble">What is a tibble?</a></li>
+<li><a href="#/differences-tibble-vs-data-frame" id="/toc-differences-tibble-vs-data-frame">Differences: tibble vs data frame</a></li>
+<li></li>
+</ul></li>
+<li><a href="#/tidy-data-concept" id="/toc-tidy-data-concept">Tidy data concept</a>
+<ul>
+<li></li>
+</ul></li>
+<li><a href="#/importing-data" id="/toc-importing-data">Importing data</a>
+<ul>
+<li></li>
+</ul></li>
+<li><a href="#/inspecting-a-data-frame" id="/toc-inspecting-a-data-frame">Inspecting a data frame</a>
+<ul>
+<li></li>
+</ul></li>
+<li><a href="#/practice-exercises" id="/toc-practice-exercises">Practice exercises</a>
+<ul>
+<li><a href="#/level-1" id="/toc-level-1">Level 1</a></li>
+<li><a href="#/level-2" id="/toc-level-2">Level 2</a></li>
+<li><a href="#/level-3" id="/toc-level-3">Level 3</a></li>
+<li><a href="#/level-4" id="/toc-level-4">Level 4</a></li>
+<li><a href="#/level-4-challenge" id="/toc-level-4-challenge">Level 4+ challenge</a></li>
+<li><a href="#/key-takeaways" id="/toc-key-takeaways">Key takeaways</a></li>
+</ul></li>
 </ul>
 </nav>
 </section>
-<section id="objectives" class="slide level2">
-<h2>Objectives</h2>
+<section id="learning-objectives" class="slide level2">
+<h2>Learning objectives</h2>
+<p>By the end of this session you should be able to:</p>
 <ul>
-<li><p>Basic data types in R</p></li>
-<li><p>Data with factors</p></li>
-<li><p><code>class()</code> and converting variables</p></li>
-<li><p>Vector and Matrix fun</p></li>
-<li><p>Practice exercises</p></li>
+<li>Understand primitive data types in R</li>
+<li>Recognise and work with special values (<code>NA</code>, <code>NaN</code>, <code>Inf</code>, <code>NULL</code>)</li>
+<li>Convert between data types safely</li>
+<li>Work confidently with:
+<ul>
+<li>Vectors</li>
+<li>Matrices</li>
+<li>Arrays</li>
+<li>Lists</li>
+<li>Data frames</li>
+<li>Tibbles</li>
+</ul></li>
+<li>Index any data structure correctly</li>
+<li>Work with factors and dates</li>
+<li>Apply tidy data concepts</li>
 </ul>
 </section>
-<section id="basic-data-types-in-r" class="slide level2">
-<h2>Basic data types in R</h2>
-<ul>
-<li><p>Concept of “Data Objects”</p></li>
-<li><p>Data you can use is in the Global Environment</p></li>
-<li><p>Data Type refers to the kind of data (important for computers)</p></li>
-<li><p>Data Type is determined automatically in R (by the passive-aggressive Butler)</p></li>
-<li><p>You often will need and want to tweak data type</p></li>
-</ul>
+<section class="slide level2">
+
 </section>
-<section id="basic-primitive-types-in-r" class="slide level2">
-<h2>Basic primitive types in R</h2>
-<pre><code>a &lt;- 1    # numeric
-mode(a)
-a &lt;- "1"  # character
-mode(a)
-a &lt;- '1'  # character
-mode(a)
-a &lt;- TRUE # logical
-mode(a)
-a &lt;-  1i # complex
-mode(a)</code></pre>
+<section>
+<section id="part-1-primitive-data-types" class="title-slide slide level1 center">
+<h1>Part 1 — Primitive data types</h1>
+
 </section>
-<section id="basic-data-types-in-r-1" class="slide level2">
-<h2>Basic data types in R</h2>
+<section id="what-is-a-data-object" class="slide level2">
+<h2>What is a data object?</h2>
 <ul>
-<li>NULL means undefined value (absence of a vector)
+<li>Everything in R is an <strong>object</strong></li>
+<li>Objects live in the <strong>Global Environment</strong></li>
+<li>Every object has:
 <ul>
-<li>is.null() function can check it</li>
-</ul></li>
-<li>NA means missing value (not available)
-<ul>
-<li>is.na()</li>
-</ul></li>
-<li>inf means infinity e.g.&nbsp;1/0 of -1/0
-<ul>
-<li>is.infinite()</li>
-</ul></li>
-<li>NaN means an invalid number e.g.&nbsp;0/0
-<ul>
-<li>is.nan()</li>
+<li>A <strong>type</strong> (what it stores)</li>
+<li>A <strong>class</strong> (how R treats it)</li>
 </ul></li>
 </ul>
+<p>Example:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb1-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="basic-data-types-in-r-2" class="slide level2">
-<h2>Basic data types in R</h2>
-<pre><code>my_list &lt;- list(a = 1, b = 2)
-my_list &lt;- my_list$c  # Element 'c' doesn't exist, Output: NULL
-
-na_addition  &lt;- 5 + NA
-print(na_addition)  # Output: NA
-
-</code></pre>
-</section>
-<section id="basic-data-types-in-r-3" class="slide level2">
-<h2>Basic data types in R</h2>
-<p>There are some rules for naming data objects</p>
+<section id="basic-primitive-types" class="slide level2">
+<h2>Basic primitive types</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">mode</span>(a)</span>
+<span id="cb2-3"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="st">"1"</span></span>
+<span id="cb2-5"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">mode</span>(a)</span>
+<span id="cb2-6"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb2-8"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">mode</span>(a)</span>
+<span id="cb2-9"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">1</span>i</span>
+<span id="cb2-11"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">mode</span>(a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Core primitive types:</p>
 <ul>
-<li><p>Can contain letters, numbers, some symbolic characters</p></li>
-<li><p>Begin with a letter, Does not contain spaces</p></li>
-<li><p>Some things are forbidden, <code>@</code>, <code>%</code>, <code>#</code>, etc.</p></li>
-<li><p>Should be human-readable, consistent, and not too long</p></li>
+<li>numeric (double): real numbers with decimal values, used for most mathematical calculations</li>
+<li>integer: whole numbers without decimals, often used for counting or indexing</li>
+<li>character: text data, including letters, words, or symbols</li>
+<li>logical: boolean values, either TRUE or FALSE</li>
+<li>complex: numbers with real and imaginary parts, used in advanced mathematical computations</li>
 </ul>
 </section>
-<section id="basic-data-types-in-r-4" class="slide level2">
-<h2>Basic data types in R</h2>
-<pre><code>x1 &lt;- 5  
-
-x2 &lt;- "It was a dark and stormy night" 
-
-# hard to read
-my_variable_9283467 &lt;- 1 
-</code></pre>
+<section id="checking-type-and-class" class="slide level2">
+<h2>Checking type and class</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb3-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(x)</span>
+<span id="cb3-4"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(x)</span>
+<span id="cb3-5"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">mode</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>class()</code></td>
+<td>How R treats the object</td>
+</tr>
+<tr class="even">
+<td><code>typeof()</code></td>
+<td>Internal storage type</td>
+</tr>
+<tr class="odd">
+<td><code>mode()</code></td>
+<td>Legacy type description</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="data-with-factors" class="slide level2">
-<h2>Data with factors</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p>Let’s say you want to analyse categorical data.</p>
-<p>Sometimes this is called a “factor”.</p>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Boxplot of Sepal.Length by Species from iris using ggplot2</span></span>
-<span id="cb4-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb4-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Species, <span class="at">y =</span> Sepal.Length, <span class="at">fill =</span> Species)) <span class="sc">+</span></span>
-<span id="cb4-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb4-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Sepal Length by Species"</span>,</span>
-<span id="cb4-6"><a href="" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Species"</span>,</span>
-<span id="cb4-7"><a href="" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Sepal Length"</span>) <span class="sc">+</span></span>
-<span id="cb4-8"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb4-9"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#a1c9f4"</span>, <span class="st">"#ffb482"</span>, <span class="st">"#8de5a1"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="data-structures_files/figure-revealjs/unnamed-chunk-1-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-</section>
-<section id="data-with-factors-1" class="slide level2">
-<h2>Data with factors</h2>
-<p>Two types of factors</p>
+<section id="special-values" class="slide level2">
+<h2>Special values</h2>
+<h3 id="null">NULL</h3>
 <ul>
-<li><p>Non-ordered factors : the levels are the names of the categories <strong>cows</strong> = Martha, Ruth, Edith</p></li>
-<li><p>Ordered factors: have a specific order <strong>dose</strong> = Control &lt; Half &lt; Full</p></li>
+<li>Absence of a value</li>
+<li>Not even a vector</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb4-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">is.null</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+<h3 id="na-missing-value">NA (missing value)</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="cn">NA</span>, <span class="dv">4</span>)</span>
+<span id="cb5-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">is.na</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Means <strong>value exists but is missing</strong></li>
 </ul>
 </section>
-<section id="class-and-converting-variables" class="slide level2">
-<h2>class() and converting variables</h2>
-<pre><code>
-# non-ordered factor
-variety &lt;- c("short", "short", "short",
-             "early", "early", "early",
-             "hybrid", "hybrid", "hybrid")
-         
-</code></pre>
+<section class="slide level2">
+
+<h3 id="inf-and-nan">Inf and NaN</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">/</span><span class="dv">0</span>      <span class="co"># Inf</span></span>
+<span id="cb6-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">0</span>     <span class="co"># -Inf</span></span>
+<span id="cb6-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span><span class="sc">/</span><span class="dv">0</span>      <span class="co"># NaN</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Inf</code></td>
+<td>Infinity</td>
+</tr>
+<tr class="even">
+<td><code>-Inf</code></td>
+<td>Negative infinity</td>
+</tr>
+<tr class="odd">
+<td><code>NaN</code></td>
+<td>Not a number</td>
+</tr>
+</tbody>
+</table>
+<p>Check:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">is.infinite</span>(x)</span>
+<span id="cb7-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">is.nan</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="vector-and-matrix-fun" class="slide level2">
-<h2>Vector and Matrix fun</h2>
-<p>Ways of organizing data</p>
-<p><br></p>
+<section id="behaviour-of-special-values" class="slide level2">
+<h2>Behaviour of special values</h2>
+<p>When you perform arithmetic with NA, such as 5 + NA, the result is NA because the value is unknown and R cannot determine the outcome.</p>
+<p>Calculating the mean of a vector that contains NA, like mean(c(1,2,NA)), returns NA because the missing value prevents the computation.</p>
+<p>If you use the argument na.rm = TRUE, as in mean(c(1,2,NA), na.rm = TRUE), R removes the missing values before performing the calculation, and the result becomes 1.5.</p>
+</section>
+<section id="naming-rules" class="slide level2">
+<h2>Naming rules</h2>
+<p>Valid names:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb8-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span> <span class="ot">-&gt;</span> x1   <span class="co"># reversing the arrow also assigns the value to x1</span></span>
+<span id="cb8-3"><a href="" aria-hidden="true" tabindex="-1"></a>plant_height <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb8-4"><a href="" aria-hidden="true" tabindex="-1"></a>yield_2024 <span class="ot">&lt;-</span> <span class="dv">8</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In R, the assignment arrow can point either left (<code>&lt;-</code>) or right (<code>-&gt;</code>).</p>
+<p>Both forms assign a value to a variable, but the left arrow is the standard and most commonly used style.</p>
+<p>The right arrow is sometimes useful in pipelines or when you want to place the result at the end of a sequence of operations.</p>
+<p>You can also use <code>=</code> for assignment:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">=</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Use <code>&lt;-</code> for most assignments in scripts and functions, as it is the conventional R style and avoids confusion with <code>=</code> used inside function arguments.</p>
+<p>Use <code>=</code> mainly when specifying arguments inside functions, such as:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Avoid:</p>
 <ul>
-<li><p>Vector - Homogeneous and One dimensional from 1 to i, <code>my_vec[i]</code></p></li>
-<li><p>Matrix - Two dimensions rows, columns, <code>my_mat[i, j]</code></p></li>
-<li><p>Array - Generalized matrix with n dimensions, <code>my_array[i, j, k]</code></p></li>
+<li>spaces</li>
+<li>starting with numbers</li>
+<li>special characters like <code>@</code>, <code>#</code>, <code>%</code></li>
 </ul>
 </section>
-<section id="vector-and-matrix-fun-1" class="slide level2">
-<h2>Vector and Matrix fun</h2>
-<pre><code># Vectors
+<section class="slide level2">
 
-myvec1 &lt;- c(1,2,3,4,5) 
-myvec1
-class(myvec1) 
+</section></section>
+<section>
+<section id="part-2-type-conversion" class="title-slide slide level1 center">
+<h1>Part 2 — Type conversion</h1>
 
-myvec2 &lt;- as.character(myvec1) 
-</code></pre>
 </section>
-<section id="vector-and-matrix-fun-2" class="slide level2">
-<h2>Vector and Matrix fun</h2>
-<pre><code>vec1 &lt;- 1:16 
-vec1 
+<section id="coercion" class="slide level2">
+<h2>Coercion</h2>
+<p>R will often convert types automatically.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="st">"3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Result: character vector</p>
+<p>Because R applies type coercion rules when combining different data types. In a vector, all elements must be of the same type, so R converts them to the most flexible type that can represent all values.</p>
+<p>The coercion hierarchy is: logical → integer → numeric → complex → character.</p>
+<p>Since character is the most flexible type, any mixture that includes a character value will be converted to character.</p>
+</section>
+<section id="manual-conversion" class="slide level2">
+<h2>Manual conversion</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(<span class="st">"5"</span>)</span>
+<span id="cb12-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">as.character</span>(<span class="dv">5</span>)</span>
+<span id="cb12-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">as.logical</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="checking-and-converting-class" class="slide level2">
+<h2>Checking and converting class</h2>
+<p><code>class()</code> describes how R treats the object at a higher level</p>
+<p><code>typeof()</code> shows the internal storage type used by R</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">"10"</span></span>
+<span id="cb13-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(x)      <span class="co"># "character"</span></span>
+<span id="cb13-4"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(x)     <span class="co"># "character"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><p>For character data, class and typeof are the same because</p></li>
+<li><p>there is no special higher-level structure applied.</p></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(x)</span>
+<span id="cb14-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(x)      <span class="co"># "numeric"</span></span>
+<span id="cb14-4"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(x)     <span class="co"># "double"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><p>For numeric data, class is “numeric” (a general category),</p></li>
+<li><p>but typeof is “double” because R stores most numbers as double-precision floating-point values internally.</p></li>
+</ul>
+</section>
+<section id="factors-categorical-data" class="slide level2">
+<h2>Factors (categorical data)</h2>
+<h3 id="unordered-factor">Unordered factor</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="" aria-hidden="true" tabindex="-1"></a>cows <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"Martha"</span>, <span class="st">"Ruth"</span>, <span class="st">"Edith"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
 
-mat1 &lt;- matrix(data = vec1, 
-               ncol = 4, 
-               byrow = FALSE) </code></pre>
+<h3 id="ordered-factor">Ordered factor</h3>
+<ul>
+<li><p>Levels define the possible categories a factor can take</p></li>
+<li><p>They represent the distinct values that the variable is allowed to have</p></li>
+<li><p>In this example, the levels are “Control”, “Half”, and “Full”</p></li>
+<li><p>The order of levels matters when the factor is ordered</p></li>
+<li><p>“Control” is treated as the lowest level, followed by “Half”, then “Full”</p></li>
+<li><p>Ordered levels allow comparisons such as less than or greater than</p></li>
+<li><p>For example, “Half” is considered greater than “Control” but less than “Full”</p></li>
+<li><p>Levels help R understand the structure of categorical data</p></li>
+<li><p>They are especially useful in statistical models and plots</p></li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="" aria-hidden="true" tabindex="-1"></a>dose <span class="ot">&lt;-</span> <span class="fu">factor</span>(</span>
+<span id="cb16-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">"Control"</span>, <span class="st">"Half"</span>, <span class="st">"Full"</span>),</span>
+<span id="cb16-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Control"</span>, <span class="st">"Half"</span>, <span class="st">"Full"</span>),</span>
+<span id="cb16-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordered =</span> <span class="cn">TRUE</span></span>
+<span id="cb16-5"><a href="" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="lists" class="slide level2">
-<h2>Lists</h2>
-<p>Unlike vectors and matrices, lists can hold elements of different types. Each element in a list can be a vector, matrix, data frame, or even another list</p>
-<pre><code># Creating a list
-my_list &lt;- list(name="John", age=25, scores=c(90, 85, 88))
-print(my_list)</code></pre>
-<p>You can access elements in a list using the $ operator or double square brackets [[]].</p>
+<section id="dates-in-r" class="slide level2">
+<h2>Dates in R</h2>
+<p>Dates are special numeric types.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"2025-03-01"</span>)</span>
+<span id="cb17-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="dataframes" class="title-slide slide level1 center">
-<h1>Dataframes</h1>
-<p>Dataframes are a special type of list that is used to store data. They are similar to matrices, but can hold elements of different types.</p>
-<pre><code># Creating a data frame
-my_data_frame &lt;- data.frame(name=c("John", "Jane", "Jim"), age=c(25, 30, 35), scores=c(90, 85, 88))
-print(my_data_frame)</code></pre>
-<p>You can access elements in a data frame using the $ operator or double square brackets [[]].</p>
-</section>
+<section class="slide level2">
 
+<h3 id="working-with-dates">Working with dates</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="" aria-hidden="true" tabindex="-1"></a>d1 <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"2025-01-01"</span>)</span>
+<span id="cb18-2"><a href="" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"2025-03-01"</span>)</span>
+<span id="cb18-3"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="" aria-hidden="true" tabindex="-1"></a>d2 <span class="sc">-</span> d1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>The result is of type <strong>difftime</strong>.</li>
+<li>R stores dates internally as the number of days since <strong>1970-01-01</strong>.</li>
+<li>When you subtract two <code>Date</code> objects, R calculates the difference between their internal numeric representations.</li>
+<li>Instead of returning a plain number, R returns a <strong>difftime object</strong> to preserve the time unit (in this case, days).</li>
+<li>This makes the result easier to interpret and prevents confusion about the unit of measurement.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="part-3-core-data-structures" class="title-slide slide level1 center">
+<h1>Part 3 — Core data structures</h1>
+
+</section>
+<section id="the-hierarchy" class="slide level2">
+<h2>The hierarchy</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Structure</th>
+<th>Dimensions</th>
+<th>Homogeneous?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Vector</td>
+<td>1D</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Matrix</td>
+<td>2D</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Array</td>
+<td>nD</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>List</td>
+<td>Any</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Data frame</td>
+<td>2D</td>
+<td>Columns homogeneous</td>
+</tr>
+<tr class="even">
+<td>Tibble</td>
+<td>2D</td>
+<td>Modern data frame</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="vectors" class="title-slide slide level1 center">
+<h1>Vectors</h1>
+
+</section>
+<section id="creating-vectors" class="slide level2">
+<h2>Creating vectors</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="" aria-hidden="true" tabindex="-1"></a>v1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>)</span>
+<span id="cb19-2"><a href="" aria-hidden="true" tabindex="-1"></a>v2 <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="vector-indexing" class="slide level2">
+<h2>Vector indexing</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">40</span>,<span class="dv">50</span>)</span>
+<span id="cb20-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="" aria-hidden="true" tabindex="-1"></a>v[<span class="dv">1</span>]</span>
+<span id="cb20-4"><a href="" aria-hidden="true" tabindex="-1"></a>v[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>]</span>
+<span id="cb20-5"><a href="" aria-hidden="true" tabindex="-1"></a>v[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="logical-indexing" class="slide level2">
+<h2>Logical indexing</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">8</span>,<span class="dv">2</span>,<span class="dv">9</span>,<span class="dv">1</span>)</span>
+<span id="cb21-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="" aria-hidden="true" tabindex="-1"></a>v[v <span class="sc">&gt;</span> <span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="using-which" class="slide level2">
+<h2>Using <code>which()</code></h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(v <span class="sc">&gt;</span> <span class="dv">5</span>)</span>
+<span id="cb22-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">which.max</span>(v)</span>
+<span id="cb22-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">which.min</span>(v)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="matrices" class="title-slide slide level1 center">
+<h1>Matrices</h1>
+
+</section>
+<section id="creating-a-matrix" class="slide level2">
+<h2>Creating a matrix</h2>
+<ul>
+<li><p>The sequence 1:12 creates the numbers from 1 to 12.</p></li>
+<li><p>The matrix() function then fills these values into a matrix</p></li>
+<li><p>with 3 rows and 4 columns. By default, R fills matrices</p></li>
+<li><p>column by column (not row by row).</p></li>
+</ul>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="" aria-hidden="true" tabindex="-1"></a> m <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">ncol =</span> <span class="dv">4</span>)  </span>
+<span id="cb23-4"><a href="" aria-hidden="true" tabindex="-1"></a>m</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="matrix-indexing" class="slide level2">
+<h2>Matrix indexing</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="" aria-hidden="true" tabindex="-1"></a>m[<span class="dv">1</span>,<span class="dv">1</span>]     <span class="co"># row 1, col 1</span></span>
+<span id="cb24-2"><a href="" aria-hidden="true" tabindex="-1"></a>m[<span class="dv">2</span>,<span class="dv">3</span>]     <span class="co"># row 2, col 3</span></span>
+<span id="cb24-3"><a href="" aria-hidden="true" tabindex="-1"></a>m[ ,<span class="dv">2</span>]     <span class="co"># entire column</span></span>
+<span id="cb24-4"><a href="" aria-hidden="true" tabindex="-1"></a>m[<span class="dv">1</span>, ]     <span class="co"># entire row</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
 <section id="arrays" class="title-slide slide level1 center">
 <h1>Arrays</h1>
-<p>Arrays are a special type of data structure that is used to store data in multiple dimensions. They are similar to matrices, but can hold elements of different types.</p>
-<pre><code># Creating an array
-my_array &lt;- array(data = 1:24, dim = c(2, 3, 4))
-print(my_array)</code></pre>
-<p>You can access elements in an array using the [,,] operator.</p>
-<pre><code># Accessing an element in an array
-my_array[1, 1, 1]</code></pre>
-</section>
 
-<section id="practice-exercises" class="title-slide slide level1 center">
-<h1>practice exercises</h1>
+</section>
+<section id="creating-an-array" class="slide level2">
+<h2>Creating an array</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">24</span>, <span class="at">dim =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This creates a three-dimensional array using the numbers from 1 to 24. The <code>dim = c(2,3,4)</code> argument tells R how to shape the data.</p>
+<p>The dimensions mean:</p>
+<ul>
+<li>2 rows</li>
+<li>3 columns</li>
+<li>4 layers (or “slices”)</li>
+</ul>
+<p>So the array is structured as 4 separate 2×3 matrices stacked along a third dimension.</p>
+<p>R fills arrays column-wise, just like matrices. That means it fills down the rows first, then moves across columns, and then moves to the next layer.</p>
+<p>Layer 1 (a[ , ,1]):</p>
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6</code></pre>
+<p>Layer 2 (a[ , ,2]):</p>
+<pre><code>     [,1] [,2] [,3]
+[1,]    7    9   11
+[2,]    8   10   12</code></pre>
+<p>Layer 3 (a[ , ,3]):</p>
+<pre><code>     [,1] [,2] [,3]
+[1,]   13   15   17
+[2,]   14   16   18</code></pre>
+<p>Layer 4 (a[ , ,4]):</p>
+<pre><code>     [,1] [,2] [,3]
+[1,]   19   21   23
+[2,]   20   22   24</code></pre>
+<p>Indexing follows the order:</p>
+<pre><code>a[row, column, layer]</code></pre>
+<p>Examples:</p>
+<pre><code>a[1,1,1]  # first row, first column, first layer → 1
+a[2,3,1]  # second row, third column, first layer → 6
+a[1,2,3]  # first row, second column, third layer → 15
+a[2,1,4]  # second row, first column, fourth layer → 20</code></pre>
+<p>So the dimensions <code>c(2,3,4)</code> describe the size of the array along each axis: rows, columns, and layers.</p>
+</section>
+<section id="array-indexing" class="slide level2">
+<h2>Array indexing</h2>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="" aria-hidden="true" tabindex="-1"></a>a[<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>]</span>
+<span id="cb32-2"><a href="" aria-hidden="true" tabindex="-1"></a>a[<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="lists" class="title-slide slide level1 center">
+<h1>Lists</h1>
+
+</section>
+<section id="what-is-a-list-and-what-can-it-contain" class="slide level2">
+<h2>What is a list and what can it contain?</h2>
+<p>A list is a flexible data structure in R that can store multiple elements of different types in a single object. Unlike vectors, matrices, and arrays, which must contain elements of the same type, a list can hold a mixture of data types and even other data structures.</p>
+<p>A list can contain:</p>
+<ul>
+<li>Numeric values</li>
+<li>Character strings</li>
+<li>Logical values</li>
+<li>Vectors</li>
+<li>Matrices</li>
+<li>Data frames</li>
+<li>Other lists (nested lists)</li>
+<li>Functions</li>
+</ul>
+<p>This makes lists very useful for storing complex or hierarchical data, such as the results of statistical models, grouped observations, or structured information about an experiment.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="" aria-hidden="true" tabindex="-1"></a>my_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb33-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"John"</span>,</span>
+<span id="cb33-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="dv">25</span>,</span>
+<span id="cb33-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">scores =</span> <span class="fu">c</span>(<span class="dv">90</span>,<span class="dv">85</span>,<span class="dv">88</span>)</span>
+<span id="cb33-5"><a href="" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="list-indexing" class="slide level2">
+<h2>List indexing</h2>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="" aria-hidden="true" tabindex="-1"></a>my_list<span class="sc">$</span>name</span>
+<span id="cb34-2"><a href="" aria-hidden="true" tabindex="-1"></a>my_list[<span class="dv">1</span>]</span>
+<span id="cb34-3"><a href="" aria-hidden="true" tabindex="-1"></a>my_list[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<h3 id="key-difference">Key difference</h3>
+<p>In R, lists can be indexed in two main ways: using single brackets <code>[ ]</code> or double brackets <code>[[ ]]</code>. These two methods behave differently and return different types of results.</p>
+<p>When you use single brackets <code>[ ]</code>, R returns a <strong>sub-list</strong>. This means it keeps the structure of a list, even if you select only one element. In other words, <code>[ ]</code> filters or selects elements from the list, but the result is still a list.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="" aria-hidden="true" tabindex="-1"></a>my_list <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">name =</span> <span class="st">"John"</span>, <span class="at">age =</span> <span class="dv">25</span>, <span class="at">scores =</span> <span class="fu">c</span>(<span class="dv">90</span>,<span class="dv">85</span>,<span class="dv">88</span>))</span>
+<span id="cb35-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="" aria-hidden="true" tabindex="-1"></a>my_list[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This returns:</p>
+<pre><code>$name
+[1] "John"</code></pre>
+<p>Even though only one element was selected, the result is still a list containing that element.</p>
+<p>In contrast, when you use double brackets <code>[[ ]]</code>, R extracts the <strong>actual element</strong> stored at that position. It removes the list structure and returns the object itself, in its original class.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="" aria-hidden="true" tabindex="-1"></a>my_list[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This returns:</p>
+<pre><code>[1] "John"</code></pre>
+<p>Now the result is a character vector, not a list.</p>
+<p>So the key idea is:</p>
+<ul>
+<li><code>[ ]</code> filters the list and returns a <strong>list</strong></li>
+<li><code>[[ ]]</code> extracts the element and returns its <strong>original class</strong></li>
+</ul>
+<p>For example:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(my_list[<span class="dv">1</span>])    <span class="co"># "list"</span></span>
+<span id="cb39-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(my_list[[<span class="dv">1</span>]])  <span class="co"># "character"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This distinction is very important when working with lists, especially when you need to access the actual data inside them.</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Syntax</th>
+<th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>[ ]</code></td>
+<td>Sub-list</td>
+</tr>
+<tr class="even">
+<td><code>[[ ]]</code></td>
+<td>Element itself</td>
+</tr>
+<tr class="odd">
+<td><code>$</code></td>
+<td>Named element</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="nested-lists" class="slide level2">
+<h2>Nested lists</h2>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="" aria-hidden="true" tabindex="-1"></a>nested <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb40-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">person =</span> <span class="fu">list</span>(</span>
+<span id="cb40-3"><a href="" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Anna"</span>,</span>
+<span id="cb40-4"><a href="" aria-hidden="true" tabindex="-1"></a>    <span class="at">age =</span> <span class="dv">30</span></span>
+<span id="cb40-5"><a href="" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-6"><a href="" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-7"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="" aria-hidden="true" tabindex="-1"></a>nested<span class="sc">$</span>person<span class="sc">$</span>name</span>
+<span id="cb40-9"><a href="" aria-hidden="true" tabindex="-1"></a>nested[[<span class="dv">1</span>]][[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="data-frames" class="title-slide slide level1 center">
+<h1>Data frames</h1>
+
+</section>
+<section id="creating-a-data-frame" class="slide level2">
+<h2>Creating a data frame</h2>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb41-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">c</span>(<span class="st">"John"</span>,<span class="st">"Jane"</span>,<span class="st">"Jim"</span>),</span>
+<span id="cb41-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">25</span>,<span class="dv">30</span>,<span class="dv">35</span>),</span>
+<span id="cb41-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">score =</span> <span class="fu">c</span>(<span class="dv">90</span>,<span class="dv">85</span>,<span class="dv">88</span>)</span>
+<span id="cb41-5"><a href="" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="data-frame-indexing" class="slide level2">
+<h2>Data frame indexing</h2>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="" aria-hidden="true" tabindex="-1"></a>df[<span class="dv">1</span>,<span class="dv">2</span>]      <span class="co"># row 1, column 2</span></span>
+<span id="cb42-2"><a href="" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>age</span>
+<span id="cb42-3"><a href="" aria-hidden="true" tabindex="-1"></a>df[ , <span class="st">"score"</span>]</span>
+<span id="cb42-4"><a href="" aria-hidden="true" tabindex="-1"></a>df[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="logical-selection" class="slide level2">
+<h2>Logical selection</h2>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="" aria-hidden="true" tabindex="-1"></a>df[df<span class="sc">$</span>age <span class="sc">&gt;</span> <span class="dv">25</span>, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="using-aggregate" class="slide level2">
+<h2>Using <code>aggregate()</code></h2>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(OrchardSprays)</span>
+<span id="cb44-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">aggregate</span>(</span>
+<span id="cb44-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> OrchardSprays<span class="sc">$</span>decrease,</span>
+<span id="cb44-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">list</span>(<span class="at">treatment =</span> OrchardSprays<span class="sc">$</span>treatment),</span>
+<span id="cb44-6"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">FUN =</span> mean</span>
+<span id="cb44-7"><a href="" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>aggregate()</code> function is used to compute summary statistics for subsets of data. In this example, it calculates the mean of the <code>decrease</code> variable for each level of the <code>treatment</code> variable.</p>
+<p>How it works:</p>
+<ul>
+<li><code>x = OrchardSprays$decrease</code> specifies the numeric variable to be summarised.</li>
+<li><code>by = list(treatment = OrchardSprays$treatment)</code> defines the grouping variable.</li>
+<li><code>FUN = mean</code> tells R to compute the mean for each group.</li>
+</ul>
+<p>The result is a new data frame where each row represents a treatment group and the corresponding mean decrease.</p>
+<p>Why use a list in <code>by</code> instead of a vector:</p>
+<p>The <code>by</code> argument expects a list because it is designed to handle one or more grouping variables. Each element of the list represents a grouping factor. Even if there is only one grouping variable, it must still be wrapped in a list.</p>
+<p>For example:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="" aria-hidden="true" tabindex="-1"></a>by <span class="ot">=</span> <span class="fu">list</span>(OrchardSprays<span class="sc">$</span>treatment)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you had two grouping variables, you could write:</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="" aria-hidden="true" tabindex="-1"></a>by <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb46-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">treatment =</span> OrchardSprays<span class="sc">$</span>treatment,</span>
+<span id="cb46-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">block =</span> OrchardSprays<span class="sc">$</span>rowpos</span>
+<span id="cb46-4"><a href="" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Using a list allows <code>aggregate()</code> to create combinations of grouping variables and compute summaries for each combination. A single vector would not support multiple grouping factors in this way.</p>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="apply-functions" class="title-slide slide level1 center">
+<h1>Apply functions</h1>
+<ul>
+<li><code>apply()</code> — used with matrices or arrays to apply a function across rows or columns</li>
+</ul>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="at">nrow =</span> <span class="dv">3</span>)</span>
+<span id="cb47-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean of each column</span></span>
+<span id="cb47-4"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">2</span>, mean)</span>
+<span id="cb47-5"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-6"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean of each row</span></span>
+<span id="cb47-7"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">1</span>, mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><code>lapply()</code> — applies a function to each element of a list and returns a list</li>
+</ul>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="" aria-hidden="true" tabindex="-1"></a>my_list <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">b =</span> <span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">c =</span> <span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>)</span>
+<span id="cb48-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean of each list element</span></span>
+<span id="cb48-4"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(my_list, mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><code>sapply()</code> — similar to <code>lapply()</code> but simplifies the result to a vector or matrix when possible</li>
+</ul>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="" aria-hidden="true" tabindex="-1"></a>my_list <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">b =</span> <span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">c =</span> <span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>)</span>
+<span id="cb49-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Simplified output (numeric vector)</span></span>
+<span id="cb49-4"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(my_list, mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><code>tapply()</code> — applies a function to subsets of a vector defined by a factor or grouping variable</li>
+</ul>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="" aria-hidden="true" tabindex="-1"></a>yield <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">7</span>)</span>
+<span id="cb50-2"><a href="" aria-hidden="true" tabindex="-1"></a>treatment <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>))</span>
+<span id="cb50-3"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean yield per treatment</span></span>
+<span id="cb50-5"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(yield, treatment, mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><code>mapply()</code> — applies a function to multiple vectors simultaneously</li>
+</ul>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb51-2"><a href="" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>)</span>
+<span id="cb51-3"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Add corresponding elements</span></span>
+<span id="cb51-5"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">mapply</span>(sum, x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><code>purrr::map()</code> — applies a function to each element of a list (tidyverse alternative)</li>
+</ul>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb52-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="" aria-hidden="true" tabindex="-1"></a>my_list <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>)</span>
+<span id="cb52-4"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-5"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns a list</span></span>
+<span id="cb52-6"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">map</span>(my_list, mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><code>purrr::map_dbl()</code> — applies a function and returns a numeric vector</li>
+</ul>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb53-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-3"><a href="" aria-hidden="true" tabindex="-1"></a>my_list <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>)</span>
+<span id="cb53-4"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-5"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns numeric vector</span></span>
+<span id="cb53-6"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">map_dbl</span>(my_list, mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><code>purrr::map_chr()</code> — applies a function and returns a character vector</li>
+</ul>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb54-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-3"><a href="" aria-hidden="true" tabindex="-1"></a>words <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">"apple"</span>, <span class="st">"banana"</span>, <span class="st">"cherry"</span>)</span>
+<span id="cb54-4"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># Get first letter of each word</span></span>
+<span id="cb54-6"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">map_chr</span>(words, <span class="sc">~</span> <span class="fu">substr</span>(.x, <span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="what-is-a-tibble" class="slide level2">
+<h2>What is a tibble?</h2>
+<p>A <strong>modern version of data frames</strong> from the tidyverse.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb55-2"><a href="" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="" aria-hidden="true" tabindex="-1"></a>tb <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb55-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">c</span>(<span class="st">"John"</span>,<span class="st">"Jane"</span>,<span class="st">"Jim"</span>),</span>
+<span id="cb55-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">25</span>,<span class="dv">30</span>,<span class="dv">35</span>)</span>
+<span id="cb55-6"><a href="" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="differences-tibble-vs-data-frame" class="slide level2">
+<h2>Differences: tibble vs data frame</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Data frame</th>
+<th>Tibble</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Prints full object</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Converts strings to factors</td>
+<td>Sometimes</td>
+<td>Never</td>
+</tr>
+<tr class="odd">
+<td>Partial matching</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Safer defaults</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="tidy-data-concept" class="title-slide slide level1 center">
+<h1>Tidy data concept</h1>
+<p>Tidy data rules:</p>
 <ol type="1">
-<li>Create a vector of the numbers 1 to 10.</li>
+<li>Each variable = one column</li>
+<li>Each observation = one row</li>
+<li>Each value = one cell</li>
 </ol>
-<pre><code># Creating a vector
-my_vector &lt;- 1:10
-print(my_vector)</code></pre>
-<ol start="2" type="1">
-<li>Create a matrix of the numbers 1 to 12, with 3 rows and 4 columns.</li>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="importing-data" class="title-slide slide level1 center">
+<h1>Importing data</h1>
+<p>Common file types:</p>
+<ul>
+<li>CSV</li>
+<li>Excel</li>
+</ul>
+<p>Example:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">read.csv</span>(<span class="st">"data.csv"</span>)</span>
+<span id="cb56-2"><a href="" aria-hidden="true" tabindex="-1"></a>readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">"data.xlsx"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="inspecting-a-data-frame" class="title-slide slide level1 center">
+<h1>Inspecting a data frame</h1>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(df)</span>
+<span id="cb57-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(df)</span>
+<span id="cb57-3"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="practice-exercises" class="title-slide slide level1 center">
+<h1>Practice exercises</h1>
+
+</section>
+<section id="level-1" class="slide level2">
+<h2>Level 1</h2>
+<ol type="1">
+<li>Create a vector from 1 to 10</li>
+<li>Extract the 3rd element</li>
+<li>Extract elements greater than 5</li>
 </ol>
-<pre><code># Creating a matrix
-my_matrix &lt;- matrix(data = 1:12, nrow = 3, ncol = 4)
-print(my_matrix)</code></pre>
-<ol start="3" type="1">
-<li>Create an array of the numbers 1 to 24, with 2 rows, 3 columns, and 4 layers.</li>
+</section>
+<section id="level-2" class="slide level2">
+<h2>Level 2</h2>
+<ol type="1">
+<li>Create a 3×4 matrix</li>
+<li>Extract column 2</li>
+<li>Extract rows where column 1 &gt; 5</li>
 </ol>
-<pre><code># Creating an array
-my_array &lt;- array(data = 1:24, dim = c(2, 3, 4))
-print(my_array)</code></pre>
-<ol start="4" type="1">
-<li>Access the element in the first row, first column, first layer of the array.</li>
+</section>
+<section id="level-3" class="slide level2">
+<h2>Level 3</h2>
+<ol type="1">
+<li>Create a list with:
+<ul>
+<li>a numeric vector</li>
+<li>a character vector</li>
+<li>a matrix</li>
+</ul></li>
+<li>Extract the matrix</li>
+<li>Extract the second element of the matrix</li>
 </ol>
-<pre><code># Accessing an element in an array
-my_array[1, 1, 1]</code></pre>
-<ol start="5" type="1">
-<li>Change the element in the first row, first column, first layer of the array to 100.</li>
+</section>
+<section id="level-4" class="slide level2">
+<h2>Level 4</h2>
+<ol type="1">
+<li><p>Create a data frame with:</p>
+<ul>
+<li>id</li>
+<li>treatment (A/B)</li>
+<li>yield</li>
+</ul></li>
+<li><p>Convert treatment to a factor</p></li>
+<li><p>Select rows where:</p>
+<ul>
+<li>treatment == “A”</li>
+<li>yield &gt; mean(yield)</li>
+</ul></li>
+<li><p>Convert the data frame to a tibble</p></li>
 </ol>
-<pre><code># Changing an element in an array
-my_array[1, 1, 1] &lt;- 100
-print(my_array)</code></pre>
-<ol start="6" type="1">
-<li>Create a list of the numbers 1 to 10.</li>
+</section>
+<section id="level-4-challenge" class="slide level2">
+<h2>Level 4+ challenge</h2>
+<p>Given:</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb58-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">farm =</span> <span class="st">"North"</span>,</span>
+<span id="cb58-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="fu">data.frame</span>(</span>
+<span id="cb58-4"><a href="" aria-hidden="true" tabindex="-1"></a>    <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb58-5"><a href="" aria-hidden="true" tabindex="-1"></a>    <span class="at">yield =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">8</span>,<span class="dv">6</span>)</span>
+<span id="cb58-6"><a href="" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb58-7"><a href="" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Tasks:</p>
+<ol type="1">
+<li>Extract the yield column</li>
+<li>Find the index of the maximum yield</li>
+<li>Return the full row containing the maximum yield</li>
 </ol>
-<pre><code># Creating a list
-my_list &lt;- list(1:10)
-print(my_list)</code></pre>
-<ol start="7" type="1">
-<li>Create a data frame of the numbers 1 to 12, with 3 rows and 4 columns.</li>
-</ol>
-<pre><code># Creating a data frame
-my_data_frame &lt;- data.frame(1:12)
-print(my_data_frame)</code></pre>
-<ol start="8" type="1">
-<li>Create an array of the numbers 1 to 24, with 2 rows, 3 columns, and 4 layers.</li>
-</ol>
-<pre><code># Creating an array
-my_array &lt;- array(data = 1:24, dim = c(2, 3, 4))
-print(my_array)</code></pre>
-<ol start="9" type="1">
-<li>Access the element in the first row, first column, first layer of the array.</li>
-</ol>
-<pre><code># Accessing an element in an array
-my_array[1, 1, 1]</code></pre>
-<ol start="10" type="1">
-<li>Access the element in the first row, first column, first layer of the array.</li>
-</ol>
-<pre><code># Accessing an element in an array
-my_array[1, 1, 1]</code></pre>
-<ol start="11" type="1">
-<li>store dataframes inside a list</li>
-</ol>
-<pre><code># Creating a list
-my_list &lt;- list(my_data_frame)
-print(my_list)</code></pre>
+<table class="caption-top" style="width:6%;">
+<colgroup>
+<col style="width: 5%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>## Level 5 challenge</td>
+</tr>
+<tr class="even">
+<td>Using the iris dataset;</td>
+</tr>
+<tr class="odd">
+<td>- find the average petal width of every flower type</td>
+</tr>
+<tr class="even">
+<td>- find the average value of every numberic column</td>
+</tr>
+<tr class="odd">
+<td>- find the sum of all the numeric elements in every row</td>
+</tr>
+<tr class="even">
+<td>- for each numeric value, find the the average of the first 5 rows and multiply them with the same calculation but of the next 5 rows.</td>
+</tr>
+<tr class="odd">
+<td>```</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-takeaways" class="slide level2">
+<h2>Key takeaways</h2>
+<ul>
+<li>Everything in R is an object</li>
+<li>Primitive types define the foundation</li>
+<li>Data structures differ by:
+<ul>
+<li>dimension</li>
+<li>homogeneity</li>
+</ul></li>
+<li>Indexing rules change across structures</li>
+<li>Tibbles are modern data frames</li>
+<li>Understanding types prevents many errors</li>
+</ul>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
 </div>
 </div>
-</section>
+</section></section>
     </div>
   </div>
 
@@ -902,82 +1591,6 @@ print(my_list)</code></pre>
         ]
       });
     </script>
-    
-
-    <script>
-
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-
-      // slide changes (different for each slide format).
-
-      (function () {
-
-        // dispatch for htmlwidgets
-
-        function fireSlideEnter() {
-
-          const event = window.document.createEvent("Event");
-
-          event.initEvent("slideenter", true, true);
-
-          window.document.dispatchEvent(event);
-
-        }
-
-    
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          fireSlideEnter();
-
-    
-
-          // dispatch for shiny
-
-          if (window.jQuery) {
-
-            if (previousSlide) {
-
-              window.jQuery(previousSlide).trigger("hidden");
-
-            }
-
-            if (currentSlide) {
-
-              window.jQuery(currentSlide).trigger("shown");
-
-            }
-
-          }
-
-        }
-
-    
-
-        // hookup for slidy
-
-        if (window.w3c_slidy) {
-
-          window.w3c_slidy.add_observer(function (slide_num) {
-
-            // slide_num starts at position 1
-
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-
-          });
-
-        }
-
-    
-
-      })();
-
-    </script>
-
-    
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
