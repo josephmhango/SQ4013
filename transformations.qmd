@@ -1,0 +1,509 @@
+---
+title: "Data Transformation Recipes"
+subtitle: "Split–Apply–Combine and the Grammar of dplyr"
+css: scroll.css
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    chalkboard: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Data Transformation Recipes
+
+Understanding how data manipulation works  
+before writing pipelines
+
+---
+
+# Where Does `dplyr` Come From?
+
+`dplyr` = **d** (data frames) + **plyr**
+
+- `plyr` was an earlier R package
+- Designed as a general tool for manipulating data
+- Name inspired by *pliers*: a tool for shaping objects
+
+The logic of `dplyr` originates from the split–apply–combine strategy formalised in:
+
+Wickham (2011), *The Split-Apply-Combine Strategy for Data Analysis*, Journal of Statistical Software.
+
+---
+
+# The Central Idea
+
+Most data analysis can be described as:
+
+## Split → Apply → Combine
+
+1. **Split** data into subsets  
+2. **Apply** a function to each subset  
+3. **Combine** the results into a structured output  
+
+This is not a programming trick.  
+It is a conceptual framework.
+
+---
+
+# What Does “Split” Mean?
+
+Splitting is partitioning a dataset into meaningful components.
+
+Examples:
+
+- By category (e.g. variety, region)
+- By time interval
+- By logical condition
+- By column dimension
+- By row chunks
+
+Splitting defines structure.
+
+---
+
+# What Does “Apply” Mean?
+
+Applying means performing an operation on each partition independently.
+
+Examples:
+
+- mean()
+- median()
+- sd()
+- scaling
+- thresholding
+- modelling
+- transformation
+
+The same function is applied to each subset.
+
+---
+
+# What Does “Combine” Mean?
+
+Combining means reassembling results into a structured object:
+
+- Data frame
+- List
+- Vector
+- Array
+
+The output dimension may differ from the input dimension.
+
+---
+
+# The Original `plyr` Design
+
+`plyr` used naming conventions such as:
+
+- `ddply()` — data frame → data frame  
+- `dlply()` — data frame → list  
+- `llply()` — list → list  
+
+The letters represented:
+
+**Input dimension → Output dimension**
+
+The framework was dimension-agnostic.
+
+---
+
+# Why `dplyr`?
+
+`dplyr` specialises split–apply–combine for data frames.
+
+It simplifies:
+
+- Verb-based operations
+- Readable pipelines
+- Efficient grouping
+- Clear dimensional changes
+
+But the philosophy remains identical.
+
+---
+
+# The Grammar of `dplyr`
+
+Core verbs:
+
+| Verb | Role in Split–Apply–Combine |
+|------|-----------------------------|
+| filter() | Reduce rows before split |
+| select() | Reduce columns |
+| mutate() | Apply function while preserving rows |
+| summarise() | Apply function and reduce rows |
+| group_by() | Define the split |
+| arrange() | Reorder after combine |
+
+---
+
+# Grouping as Metadata
+
+When running:
+
+```r
+df |>
+  group_by(group_var) |>
+  summarise(mean_x = mean(x))
+```
+
+Conceptually:
+
+1. Partition df by group_var  
+2. Apply mean(x) to each partition  
+3. Combine into a new data frame  
+
+`group_by()` stores partition information that alters verb behaviour.
+
+---
+
+# Cardinality Changes
+
+Understanding row cardinality is fundamental.
+
+- `mutate()` preserves row count  
+- `summarise()` reduces row count  
+- `filter()` reduces row count  
+- `pivot_longer()` increases row count  
+- `pivot_wider()` may reduce row count  
+
+Every transformation changes dimensional structure.
+
+---
+
+# A Data Transformation Recipe
+
+A recipe is:
+
+A reproducible sequence of split–apply–combine operations that converts raw data into structured analytical output.
+
+Structure:
+
+Raw → Clean → Partition → Apply → Combine → Visualise
+
+## The dplyr Pipe and Recipe Flow
+
+A **dplyr recipe** is a *step-by-step transformation* of data, where each stage passes its result to the next. The key ingredient for this clarity and flow is the **pipe** operator:
+
+```r
+%>%
+```
+
+which reads as "and then."  
+It allows you to express a sequence of operations that mimic your analytic reasoning:
+
+> Take raw data, **and then** filter, **and then** group, **and then** summarise, **and then** reshape.
+
+### Anatomy of a dplyr Recipe
+
+A typical dplyr transformation has this sequential structure:
+
+```r
+data %>%
+  filter(...) %>%         # Step 1: Remove unwanted rows
+  mutate(...) %>%         # Step 2: Add or modify columns
+  group_by(...) %>%       # Step 3: Define partitions
+  summarise(...) %>%      # Step 4: Aggregate within partitions
+  arrange(...)            # Step 5: Order the results (optional)
+```
+
+- Each line is a **verb**, describing what to do at that step.
+- The output of one operation becomes the input of the next.
+- This sequential flow matches the way you *think* about transforming data.
+
+Pipelines improve **readability** and **reproducibility**, making analysis transparent:  
+you can trace the journey from messy input to structured output, one step at a time.
+
+
+---
+
+# dplyr: The Big Picture
+
+- Built for readable, reproducible data transformations
+- Expresses workflows with a consistent "verb-based" grammar
+- Encourages thinking in terms of partitions and transformations, not iteration
+- Makes data pipelines transparent, auditable, and easy to debug
+- Abstracts away implementation details so you can focus on *what* to do, not *how* to do it
+- Powers modern, scalable workflows in R—but the conceptual grammar transfers beyond R
+
+#  Lab 
+
+# Rotation Lab Overview
+Split into 3 groups and rotate across three problems.
+
+Each problem emphasises a different form of splitting:
+
+1. Explicit grouping
+2. Dimensional reshaping
+3. Conditional partitioning
+
+All datasets are built into `ggplot2`.
+
+---
+
+# Required Packages
+
+```r
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+data("diamonds", package = "ggplot2")
+data("economics", package = "ggplot2")
+data("midwest", package = "ggplot2")
+```
+
+---
+
+# Problem A  
+## Explicit Group-Based Split
+
+Dataset: `diamonds`
+
+Conceptual focus:
+
+Split by category → Apply summary → Combine → Visualise
+
+---
+
+## Task A
+
+1. Introduce artificial missing values in `price` and `carat`
+2. Remove missing values
+3. Cap `price` at 15000 using a threshold
+4. Split by `cut`
+5. Compute:
+   - mean capped price
+   - median capped price
+   - mean carat
+   - count
+6. Pipe results into a bar plot
+
+```r
+# Solution for Task A
+
+set.seed(123)  # For reproducibility
+
+diamonds_miss <- diamonds |>
+  mutate(
+    price = ifelse(runif(n()) < 0.05, NA, price),  # 5% missing in price
+    carat = ifelse(runif(n()) < 0.05, NA, carat)   # 5% missing in carat
+  ) |>
+  filter(!is.na(price), !is.na(carat)) |>
+  mutate(price_capped = pmin(price, 15000)) |>
+  group_by(cut) |>
+  summarise(
+    mean_capped_price = mean(price_capped),
+    median_capped_price = median(price_capped),
+    mean_carat = mean(carat),
+    count = n(),
+    .groups = "drop"
+  ) |>
+  ggplot(aes(x = cut, y = mean_capped_price, fill = cut)) +
+  geom_col(show.legend = FALSE) +
+  labs(
+    title = "Mean capped price by cut",
+    x = "Cut",
+    y = "Mean capped price"
+  )
+```
+
+---
+
+## Conceptual Questions
+
+- What variable defines the split?
+- Does `mutate()` change row count?
+- Does `summarise()` change row count?
+- What is the dimension of the combined result?
+
+---
+
+# Problem B  
+## Dimensional Split via Reshaping
+
+Dataset: `economics`
+
+Conceptual focus:
+
+Split by time interval and variable dimension.
+
+---
+
+## Task B
+
+1. Create year and quarter variables from `date`
+2. Group by year and quarter and calculate mean of each variable:
+   - unemploy
+   - uempmed
+   - psavert
+3. Plot the quarterly average of unemployment
+
+::: solution
+
+```r
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+# Add year and quarter columns
+economics_q <- economics %>%
+  mutate(
+    year = year(date),
+    quarter = quarter(date)
+  )
+
+# Group by year and quarter, then summarise quarterly means
+economics_quarterly <- economics_q %>%
+  group_by(year, quarter) %>%
+  summarise(
+    mean_unemploy = mean(unemploy, na.rm = TRUE),
+    mean_uempmed = mean(uempmed, na.rm = TRUE),
+    mean_psavert = mean(psavert, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Simple line plot: quarterly unemployment
+ggplot(economics_quarterly, aes(x = year + (quarter - 1)/4, y = mean_unemploy)) +
+  geom_line(color = "steelblue", size = 1) +
+  labs(
+    title = "Quarterly Mean Unemployment",
+    x = "Year (Quarter)",
+    y = "Mean Unemployment"
+  )
+```
+
+:::
+
+---
+
+## Conceptual Questions
+
+- Which variables define the time-based split in Task B?
+- How does creating year and quarter columns affect the structure of the data?
+- Why do we use `group_by(year, quarter)` before summarising?
+- What does summarising multiple variables together achieve in this context?
+- How does this example illustrate split–apply–combine over time?
+
+---
+
+# Problem C  
+## Conditional Partitioning
+
+Dataset: `midwest`
+
+Conceptual focus:
+
+Splitting via logical classification.
+
+---
+
+## Task C
+
+Goal: Compare average population density by poverty status, across states.
+
+1. Create a simple poverty band: "Low" if poverty < 15%, otherwise "High"
+2. Group by state and poverty band
+3. Compute average population density for each group
+
+```r
+library(dplyr)
+library(ggplot2)
+
+# Add a poverty band with mutate, then group and summarise
+midwest_summary <- midwest %>%
+  mutate(
+    poverty_band = ifelse(poverty < 15, "Low", "High")
+  ) %>%
+  group_by(state, poverty_band) %>%
+  summarise(
+    mean_density = mean(poptotal / area, na.rm = TRUE)
+  )
+
+# Visualise
+ggplot(midwest_summary, aes(x = poverty_band, y = mean_density, fill = poverty_band)) +
+  geom_col() +
+  facet_wrap(~state) +
+  labs(
+    title = "Mean Population Density by Poverty Band and State",
+    x = "Poverty Band",
+    y = "Mean Population Density"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+---
+
+## Conceptual Questions
+
+- What does `mutate()` add to your data here?
+- What variable(s) define the data split for the summary?
+- Why do we use `group_by()` before `summarise()`?
+
+---
+
+# Recap
+
+Let's explore a more advanced transformation using `filter`, grouped summaries, and visualisation.
+
+Goal: For each state and poverty band, calculate *mean* and *standard deviation* of population density **for counties with population over 10,000**, and visualise the results with error bars.
+
+```r
+library(dplyr)
+library(ggplot2)
+
+midwest_stats <- midwest %>%
+  filter(poptotal > 10000) %>%
+  mutate(
+    poverty_band = ifelse(poverty < 15, "Low", "High"),
+    pop_density = poptotal / area
+  ) %>%
+  group_by(state, poverty_band) %>%
+  summarise(
+    mean_density = mean(pop_density, na.rm = TRUE),
+    sd_density = sd(pop_density, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Visualise mean ± SD with pointrange
+ggplot(midwest_stats, aes(x = poverty_band, y = mean_density, ymin = mean_density - sd_density, ymax = mean_density + sd_density, color = poverty_band)) +
+  geom_pointrange(position = position_dodge(width = 0.5)) +
+  facet_wrap(~state) +
+  labs(
+    title = "Population Density (Mean ± SD) by Poverty Band and State (Counties > 10,000 pop.)",
+    x = "Poverty Band",
+    y = "Population Density"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+---
+
+# Reflection
+
+Consider:
+
+- What defines a partition?
+- What determines output dimensionality?
+- Why does operation order matter?
+- How does `dplyr` encode split–apply–combine?
+
+---
+
+# Key Takeaways
+
+- `dplyr` is a grammar for structured data manipulation
+- Grouping is partition metadata
+- Dimensional changes are deliberate and traceable
+- Pipelines express reproducible transformation recipes
+- Split–apply–combine is the unifying principle
+
+---

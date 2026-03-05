@@ -1,0 +1,925 @@
+---
+title: "Split-Apply-Combine: Start Over in Base R"
+author: "K.J. Mhango"
+subtitle: "Core R tools from loops to reshape"
+css: scroll.css
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    incremental: false
+execute:
+  echo: true
+  warning: false
+  message: false
+editor: visual
+---
+
+## How to use this deck
+
+This deck is meant to help in building an accurate mental model of:
+
+- **what an object is**
+- **what a function is**
+- **how R decides what to do next**
+- **how to repeat work safely**
+- **how to solve “grouped” problems without any tidyverse**
+
+Don't memorise commands. You are trying to build reliable instincts.
+
+In each section:
+
+1. you will meet one idea,
+2. you will see why it exists,
+3. you will practise it in a small example,
+4. and later you will reuse it inside a bigger workflow.
+
+---
+
+## Goals
+
+By the end, you should be able to **read and write base-R code that feels structured**, even without packages.
+
+Specifically, you should be able to:
+
+- write and call your own functions (so your work is reusable)
+- use `if/else`, `for`, and `while` when you truly need control flow
+- build readable pipelines with the native pipe `|>`
+- test logic with `%in%`, `any()`, and `all()`
+- manage objects with `exists()` and `remove()`
+- solve grouped problems using the split → apply → combine strategy
+- reshape and merge data in base R (long ↔ wide, join-like merges)
+
+These are the foundations underneath later tools like **plyr/dplyr**, but we will *not* rely on those.
+
+---
+
+## Setup
+
+```{r}
+set.seed(42)
+
+data(iris)
+data(mtcars)
+
+head(iris, 3)
+head(mtcars, 3)
+```
+
+---
+
+# Part 1: Objects, functions, and calling
+
+## Why start here?
+
+Most people learn R by copying analysis scripts.
+
+That often creates a dangerous illusion:
+
+- it *looks* like you are doing analysis,
+- but you are not yet controlling the computation.
+
+To control computation, you need to understand two things early:
+
+1. **Objects** (data lives inside them)
+2. **Functions** (work happens through them)
+
+Everything else in this deck is built from those.
+
+---
+
+## Objects: what they really are
+
+An *object* is just a named thing in memory.
+
+- `iris` is an object
+- `mtcars` is an object
+- `x <- 1:10` creates an object named `x`
+
+Objects matter because:
+
+- you cannot analyse what you cannot refer to
+- you cannot reuse results if you never store them
+
+A common mistake is to run code that prints results but never stores them.
+
+Example:
+
+```{r}
+x <- 1:10
+x
+```
+
+Now `x` exists and can be reused.
+
+---
+
+## Functions: what they really are
+
+A function is a reusable recipe.
+
+- it takes **inputs** (arguments)
+- it performs steps
+- it produces **an output** (a return value)
+
+In R, most things you do are function calls:
+
+- `mean(x)`
+- `max(x)`
+- `head(iris)`
+
+You will progress fastest if you stop thinking of R as “commands” and start thinking of it as:
+
+> Objects flow through functions, and functions themselves are also objects—meaning you can store them, pass them around, and manipulate them just like data.
+
+---
+
+## A simple function
+
+This function rescales numbers to the range 0–1.
+
+It is useful because scaling is a common preprocessing step in many analyses.
+
+```{r}
+scale_range <- function(x) {
+  rng <- max(x) - min(x)
+  (x - min(x)) / rng
+}
+
+scale_range(c(3, 5, 9, 11))
+```
+
+Read it slowly:
+
+- `function(x)` means: “this recipe expects one input called `x`”
+- we compute the range `rng`
+- by default, the value of the last evaluated expression is returned from a function
+- you can also use an explicit `return()` statement (e.g., `return(value)`) to immediately return a value and exit the function early
+- both implicit (no `return`) and explicit (`return()`) returns are valid; `return()` is useful when you want to exit before reaching the end (such as inside a conditional), but otherwise behaves the same
+
+Two key habits:
+
+1. name intermediate steps (`rng`) so code is readable
+2. keep functions small and single-purpose
+
+> **Note:** Functions in R act as "black boxes." The variables you define inside a function (like `rng` in `scale_range`) only exist while the function is running—they are *local* to that function. After the function finishes, those intermediate steps do **not** persist in memory as objects. Only the *output* you assign (like `result <- scale_range(x)`) will remain.
+
+---
+
+## Function arguments: values vs names
+
+Arguments can be supplied in two common ways:
+
+1. by position
+2. by name
+
+Example:
+
+```{r}
+mean(1:10)
+mean(x = 1:10)
+```
+
+Both do the same thing.
+
+Why care?
+
+- named arguments reduce mistakes
+- named arguments make your intent clearer
+
+This becomes even more important when a function has many parameters.
+
+---
+
+## Why `do.call()` exists
+
+Sometimes you want to call a function, but your arguments are stored inside a list.
+
+That is exactly what `do.call()` solves: it *does* a function *call* using the arguments in a list.
+
+The details: `do.call(fun, argslist)` takes a function and a list, and uses the list elements as arguments for that function. If the list has names, those are matched to the function's argument names. If the list is unnamed, arguments are matched by position, just like regular function calls.
+
+- If your list has an argument named `foo` but the function doesn't have an argument called `foo`, you'll get an error: “unused argument (foo = ...)”.
+
+- If the name matches but the type is wrong (for example, the function expects a number but you pass a character), you'll get a type error just like passing the wrong type directly to a function.
+
+- If there are more items (names) in your list than arguments in the function, the extra ones are ignored **only** if the function has `...` (dot-dot-dot) in its arguments—otherwise, it's an error.
+
+- If your list is positional (no names), arguments are filled into the function by position (first list element goes to the first function argument, etc).
+
+This lets you build up arguments dynamically, but also means you want to be careful that your list matches the function signature in both names and types.
+
+Instead of writing:
+
+```
+mean(1:10)
+```
+
+you can do:
+
+```{r}
+args <- list(x = 1:10)
+
+do.call(mean, args)
+```
+
+This looks unnecessary *here*, but becomes essential when:
+
+- you do split-apply-combine
+- you have a list of many pieces
+- you need to pass those pieces into a function like `rbind`
+
+So: `do.call()` is a bridge between **lists** and **function calls**.
+
+---
+
+## Combining many pieces: why `do.call(rbind, ...)`
+
+Suppose you have many small data frames and you want one big data frame.
+
+You *could* write:
+
+```
+rbind(df1, df2, df3, df4, ...)
+```
+
+But when the number of pieces is unknown (and stored in a list), you instead do:
+
+```{r}
+pieces <- list(
+  data.frame(id = 1:2, val = c(10, 20)),
+  data.frame(id = 3:4, val = c(30, 40))
+)
+
+do.call(rbind, pieces)
+```
+
+This pattern is the backbone of combining grouped results.
+
+---
+
+# Part 2: Control flow (decisions and repetition)
+
+## Why control flow matters
+
+Real analysis is rarely a straight line.
+
+You often need to:
+
+- do something only if a condition is true
+- repeat work across many items
+- keep going until a criterion is met
+
+This section builds those tools:
+
+- decisions: `if` / `else`
+- repetition: `for` and `while`
+
+---
+
+## `if` / `else`: making decisions
+
+A conditional answers the question:
+
+> “Given this input, which branch of code should run?”
+
+> **Note:** In R, `if` is a special keyword, but it is almost always written with a space before the parentheses: `if ()`, *not* `if()`. Still, `if (condition) expression` is functionally like `if(condition, expression)`—but always keep that stylistic space after `if`.
+
+```{r}
+label_efficiency <- function(mpg) {
+  if (mpg >= 25) {
+    "efficient"
+  } else {
+    "standard"
+  }
+}
+
+label_efficiency(30)
+label_efficiency(18)
+```
+
+How to read it:
+
+- evaluate `mpg >= 25`
+- if TRUE, return "efficient"
+- otherwise, return "standard"
+
+This is not about cars.
+
+It is about learning how to express rule-based logic.
+
+---
+
+## `for` loops: repeating across a known sequence
+
+A `for` loop is best when you know what you are looping over.
+
+Example: a vector of values.
+
+```{r}
+x <- c(3, 5, 9, 11)
+
+squared <- numeric(length(x))
+
+for (i in 1:length(x)) {
+  squared[i] <- x[i]^2
+}
+
+squared
+```
+
+Important beginner pattern:
+
+- create an output container first (`numeric(length(x))`)
+- fill it in the loop
+
+This prevents slow, messy “growing objects” inside loops.
+
+---
+
+## `while` loops: repeating until a condition changes
+
+A `while` loop is best when you do not know how many steps are needed.
+
+You keep going until the condition becomes false.
+
+```{r}
+target <- 100
+running <- 0
+i <- 1
+
+while (running < target) {
+  running <- running + i
+  i <- i + 1
+}
+
+list(sum_reached = running, terms_used = i - 1)
+```
+
+The concept here is *algorithmic thinking*:
+
+- initialise state
+- update state
+- stop when a criterion is met
+
+---
+
+# Part 3: Logic you will use everywhere
+
+## Why logical tools matter
+
+Logical tools are not “extra”. They are the glue.
+
+You will use them to:
+
+- filter rows
+- check assumptions
+- validate input
+- trigger warnings
+- choose analysis paths
+
+The goal is to become comfortable reading TRUE/FALSE vectors.
+
+---
+
+## Sandwich (Infix) Operators: Functions Between Their Arguments
+
+In R, any function wrapped in `%` signs (like `%in%`, `%%`, or custom `%myfun%`) is called an *infix* or "sandwich" operator. Unlike standard functions that are written in front of their arguments—such as `add(1, 2)`—infix operators are placed between their arguments: `1 %add% 2`.
+
+### The Built-in Classics
+
+You've probably seen some of these already:
+
+- `%in%`: Checks if a value exists in a vector.
+  
+  ```r
+  "apple" %in% c("apple", "banana")
+  # Returns TRUE
+  ```
+
+- `%*%`: Does matrix multiplication.
+
+- `%>%` or `|>`: The "pipe" operator (from **magrittr** or base R), which passes results from one step to the next.
+
+### Making Your Own Sandwich Operator
+
+You can define your own custom infix operator—just remember, the function must take exactly two arguments.
+
+Example: create a "greater than" operator `%gt%`:
+
+```r
+`%gt%` <- function(a, b) {
+  a > b
+}
+
+# Use it like this:
+10 %gt% 5    # Returns TRUE
+2 %gt% 10    # Returns FALSE
+```
+
+This style can make your code expressive and flexible
+
+---
+
+## `any()` and `all()`
+
+Logical vectors often need summarising.
+
+- `any()` asks: is there *at least one* TRUE?
+- `all()` asks: are *all* values TRUE?
+
+```{r}
+w <- mtcars$wt
+
+any(w > 5)
+all(w > 2)
+```
+
+These are extremely useful for sanity checks.
+
+Example use cases:
+
+- “Did any group fail to compute?”
+- “Are all required columns present?”
+
+---
+
+## `exists()` and `remove()`
+
+In scripted work, you sometimes need to manage workspace state.
+
+- `exists()` checks if an object name exists
+- `remove()` deletes an object
+
+```{r}
+exists("tmp_object")
+
+tmp_object <- data.frame(x = 1:3)
+exists("tmp_object")
+
+remove(tmp_object)
+exists("tmp_object")
+```
+
+Why this matters:
+
+- you do not want stale objects from older runs influencing your results
+- you want your scripts to behave predictably
+
+---
+
+# Part 4: Pipes and readable step-by-step code
+
+## Why pipes exist
+
+You will often write code that is correct but hard to read because it nests functions.
+
+Nested form (harder to scan):
+
+```
+head(transform(subset(mtcars, cyl %in% c(4,6)), kpl = mpg * 0.425), 5)
+```
+
+Pipeline form (easier to scan):
+
+```{r}
+mtcars |>
+  subset(cyl %in% c(4, 6)) |>
+  transform(kpl = mpg * 0.425144) |>
+  head(5)
+```
+
+The pipe is not magic.
+
+It simply passes the left-hand object into the first argument of the next function.
+
+---
+
+## A general rule for pipes
+
+Use pipes when:
+
+- you are applying *several transformations in sequence*
+- each step can be described in plain language
+
+Avoid pipes when:
+
+- you need many branching decisions
+- the logic is clearer as a named function
+
+Pipes make analysis scripts read like a recipe.
+
+---
+
+# Part 5: Split → Apply → Combine
+
+## Why this pattern matters
+
+Most real datasets contain groups:
+
+- species, sites, years, farms, plots
+- experimental treatments
+- customer segments
+
+A grouped question is anything like:
+
+- “compute the mean per group”
+- “fit a model per group”
+- “filter within each group”
+
+Split-apply-combine is the general strategy that solves these.
+
+---
+
+## Step 1 — Split
+
+`split()` takes a dataset and returns a **list of pieces**.
+
+Each piece corresponds to one group.
+
+```{r}
+car_groups <- split(mtcars, mtcars$cyl)
+
+names(car_groups)
+
+sapply(car_groups, nrow)
+```
+
+Key idea:
+
+- split returns a **list**
+- so everything you learned about lists now applies
+
+---
+
+## Step 2 — Apply
+
+Once you have a list of group datasets, you need to apply the same logic to each.
+
+`lapply()` is the standard base-R tool for that.
+
+```{r}
+group_stats <- lapply(car_groups, function(d) {
+  data.frame(
+    cyl = unique(d$cyl),
+    mean_mpg = mean(d$mpg),
+    mean_hp  = mean(d$hp)
+  )
+})
+
+group_stats
+```
+
+Read it as:
+
+- “for each group dataset `d`”
+- “compute a small summary table”
+
+The output is still a list.
+
+---
+
+## Step 3 — Combine
+
+Now you usually want a single output.
+
+Because the results are in a list, you combine using `do.call()`.
+
+```{r}
+summary_table <- do.call(rbind, group_stats)
+summary_table
+```
+
+This is why `do.call()` was introduced earlier.
+
+At this stage it should feel natural:
+
+- split gives a list
+- apply works on the list
+- combine collapses the list into a single object
+
+---
+
+## `by()` as a grouped helper
+
+Base R also provides `by()` for grouped operations.
+
+It is not always the most flexible, but it is a good mental bridge:
+
+- it applies a function within each group
+- it returns a grouped structure
+
+```{r}
+by(
+  iris$Sepal.Length,
+  iris$Species,
+  mean
+)
+```
+
+If you understand `split()` + `lapply()` + `do.call()`, then `by()` will make sense.
+
+---
+
+## Combine patterns (what combines what?)
+
+Different outputs combine differently:
+
+- vectors often combine with `c()` or `unlist()`
+- tables often combine with `rbind()`
+- columns often combine with `cbind()`
+- lists often combine by indexing or concatenation
+
+The main beginner skill is:
+
+> choose the combine step that matches the type of object you are producing.
+
+---
+
+# Part 6: Data-frame “verbs” in base R
+
+## Why call them verbs?
+
+When working with data frames, you repeatedly do a small set of actions:
+
+- filter rows
+- select columns
+- create columns
+- summarise
+
+Packages like dplyr give these actions short names.
+
+But base R can do all of them.
+
+The goal here is to see the base-R equivalents.
+
+---
+
+## `subset()`
+
+`subset()` is a convenient base-R function for filtering and selecting.
+
+```{r}
+subset(mtcars, cyl == 6, select = c(mpg, cyl, wt))
+```
+
+How to read:
+
+- keep rows where `cyl == 6`
+- keep only `mpg`, `cyl`, and `wt`
+
+Use it when:
+
+- you want readable code
+- you do not need non-standard evaluation tricks
+
+---
+
+## `with()`
+
+Beginners often write:
+
+```
+cor(mtcars$mpg, mtcars$wt)
+```
+
+This is fine, but gets repetitive.
+
+`with()` temporarily treats column names as if they are variables.
+
+```{r}
+with(mtcars, cor(mpg, wt))
+with(iris, tapply(Sepal.Length, Species, mean))
+```
+
+Use it when:
+
+- you are doing several operations using the same dataset
+- you want to reduce clutter
+> **Note:** `with()` is generally discouraged in modern R. It is best to use the pipe (`|>`), and it's important to understand how to use the pipe effectively.
+---
+
+## `transform()`
+
+`transform()` creates or modifies columns.
+
+```{r}
+mt2 <- transform(
+  mtcars,
+  wt_kg = wt * 453.592,
+  mpg_band = ifelse(mpg >= 20, "high", "low")
+)
+
+head(mt2, 4)
+```
+
+The key mental model:
+
+- `transform()` returns a new data frame
+- it does not permanently change the old one unless you assign it
+
+---
+
+## Missing values with `complete.cases()`
+
+Missing data breaks many analyses.
+
+`complete.cases()` produces a logical vector that is TRUE for rows with no missing values.
+
+```{r}
+toy <- data.frame(
+  a = c(1, NA, 3, 4),
+  b = c(9, 8, NA, 6)
+)
+
+complete.cases(toy)
+
+toy[complete.cases(toy), ]
+```
+
+This is a powerful pattern:
+
+- compute a logical index
+- subset using that index
+
+---
+
+# Part 7: Merge and reshape
+
+## Why merge and reshape appear in real work
+
+Data is rarely delivered in the format you want.
+
+You often need to:
+
+- combine information from multiple tables
+- restructure data between wide and long formats
+
+Base R includes tools for both.
+
+---
+
+## `merge()`
+
+`merge()` combines rows from two tables using a shared key (like an ID).
+
+```{r}
+left <- data.frame(id = 1:4, team = c("A", "A", "B", "C"))
+right <- data.frame(id = c(2, 3, 5), score = c(88, 91, 76))
+
+merge(left, right, by = "id")
+merge(left, right, by = "id", all.x = TRUE)
+merge(left, right, by = "id", all = TRUE)
+```
+
+Interpretation:
+
+- default merge is like an inner join
+- `all.x = TRUE` keeps all rows from the left
+- `all = TRUE` keeps all rows from both
+
+---
+
+## Reshaping: wide vs long
+
+You will see both formats:
+
+- **wide**: many measurement columns (`q1`, `q2`, `q3`)
+- **long**: one measurement column plus a label column (`quarter`)
+
+Long format is often easier for:
+
+- grouped summaries
+- plotting
+- modelling
+
+Wide format is often easier for:
+
+- spreadsheet-style reporting
+- some multivariate workflows
+
+---
+
+## `reshape()` wide → long
+
+```{r}
+wide <- data.frame(
+  id = 1:3,
+  q1 = c(10, 20, 15),
+  q2 = c(12, 18, 17)
+)
+
+long <- reshape(
+  wide,
+  varying = c("q1", "q2"),
+  v.names = "value",
+  timevar = "quarter",
+  times = c("q1", "q2"),
+  direction = "long"
+)
+
+long[order(long$id), ]
+```
+
+Read it as:
+
+- take the columns `q1` and `q2`
+- stack them into one column called `value`
+- record which column they came from in `quarter`
+
+---
+
+## `reshape()` long → wide
+
+```{r}
+back_to_wide <- reshape(
+  long,
+  idvar = "id",
+  timevar = "quarter",
+  direction = "wide"
+)
+
+back_to_wide[order(back_to_wide$id), ]
+```
+
+Read it as:
+
+- each `id` becomes one row again
+- each `quarter` becomes a separate column
+
+---
+
+# Part 8: A full base-R pipeline (bringing it together)
+
+## Why end with an end-to-end example
+
+Beginners often learn functions in isolation and then struggle to combine them.
+
+This final example is deliberately written like a recipe:
+
+- filter
+- split
+- transform within group
+- combine
+- summarise
+- sanity-check
+
+Your goal is to be able to narrate what each step does.
+
+---
+
+## End-to-end example
+
+```{r}
+cars_small <- mtcars |>
+  subset(cyl %in% c(4, 6, 8), select = c(mpg, cyl, wt, hp))
+
+parts <- split(cars_small, cars_small$cyl)
+
+parts2 <- lapply(parts, function(d) {
+  transform(
+    d,
+    class = ifelse(mpg >= mean(mpg), "above_group_mean", "below_group_mean"),
+    hp_wt = hp / wt
+  )
+})
+
+combined <- do.call(rbind, parts2)
+
+with(combined, tapply(hp_wt, cyl, mean))
+
+any(combined$hp_wt > 100)
+all(combined$wt > 1)
+```
+
+---
+
+# Practice
+
+## Exercises
+
+These are designed to force you to use the same ideas in slightly different ways.
+
+1. Create a function that returns `"pass"` if a score is at least 50, otherwise `"fail"`.
+2. Use a `for` loop to compute cumulative sums of `1:10`.
+3. Use a `while` loop to find the smallest `n` such that `sum(1:n) > 500`.
+4. Split `iris` by `Species`, compute mean `Petal.Length` per group, and combine into one data frame.
+5. Add missing values to a copy of `iris` and filter complete rows with `complete.cases()`.
+6. Build a small wide table and convert it to long format using `reshape()`.
+
+---
+
+## Wrap-up
+
+If you can perform this sequence, you have the foundations required for almost all data manipulation frameworks:
+
+- write a function
+- make decisions with `if/else`
+- repeat with loops when necessary
+- split data into groups
+- apply group logic
+- combine results
+- reshape and merge to match the needs of modelling and plotting
+
+Once these feel natural, packages like **dplyr** stop being “magic” and start being “convenience”.
+
