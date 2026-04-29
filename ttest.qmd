@@ -1,7 +1,7 @@
 ---
-title: "The t-Test Story"
+title: "The t-Test"
 subtitle: "From Sampling Uncertainty to Statistical Inference"
-author: "Harper Adams University"
+author: "K.J.Mhango"
 css: "scroll.css"
 format:
   revealjs:
@@ -27,7 +27,7 @@ library(tidyr)
 
 # Welcome
 
-## What you are trying to understand
+## What this session is about
 
 By the end of this session, you should be able to explain:
 
@@ -42,7 +42,7 @@ By the end of this session, you should be able to explain:
 
 # Part 1 — The problem
 
-## You only ever see one sample
+## You mostly ever see one sample
 
 In real research, you do not observe the whole population.
 
