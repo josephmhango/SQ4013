@@ -86,7 +86,7 @@ Using `plots`:
 
 ---
 
-## 5. Grouped means (base R)
+## 5. Grouped means
 
 Using the `plots` data:
 
@@ -187,7 +187,7 @@ Explain your steps briefly.
 
 ---
 
-## 11. Reshaping measurements (wide → long, base R)
+## 11. Reshaping measurements
 
 ```r
 set.seed(7)
@@ -221,7 +221,7 @@ Using the long data from Question 11:
 
 ---
 
-## 13. Long to wide (tidyverse allowed)
+## 13. Long to wide
 
 Using the long dataset:
 
