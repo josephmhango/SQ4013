@@ -31,7 +31,7 @@ In this session we will:
 - Explain what a **p-value** is (and is not).
 - Understand the role of **sample size (N)**.
 - Make sense of **degrees of freedom (d.f.)** across different tests.
-- Learn how to **report results** clearly (in a way that works for SPSS and other software).
+- Learn how to **report results** clearly (in a way that works for R and other software).
 
 ---
 
@@ -50,11 +50,7 @@ Most basic statistical tests return three key things:
 3. **Degrees of freedom (d.f.)** and **sample size (N)**  
    - These tell you **how much information** went into the test.
 
-In SPSS, you typically see these in the same row of a table:
 
-- For a correlation: a row for the pair of variables with columns for **Pearson Correlation**, **Sig. (2-tailed)**, and **N**.
-- For a t-test: a row with **t**, **df**, and **Sig. (2-tailed)**.
-- For chi-square: a row with **Chi-Square**, **df**, and **Asymp. Sig. (2-sided)**.
 
 ---
 
@@ -232,7 +228,7 @@ Interpretation:
 - **p < 0.001**: if there were truly no relationship in the population, seeing a correlation this strong (or stronger) in a sample of 16 by chance is **extremely unlikely**.
 - We **reject H₀** and conclude there is **evidence of a real positive relationship** between fertiliser rate and yield.
 
-In SPSS, you’d see:
+In R, you’d see:
 
 - `Pearson Correlation = .860`
 - `Sig. (2-tailed) = .000`
@@ -340,6 +336,7 @@ Because we calculated the mean from the data, we used up **one degree of freedom
 The more parameters you fix, the more degrees of freedom you use up
 
 ---
+
 ## Why This Affects the t-Distribution (and others)
 
 - The t-distribution adjusts its shape based on the degrees of freedom. 
@@ -382,7 +379,6 @@ Question:
 - H₀: Gender and mode of transport are **independent** (no association).
 - H₁: They **are associated** (e.g. males and females favour different modes).
 
-In SPSS, you would use **Analyze → Descriptive Statistics → Crosstabs…** and request a **Chi-square** test.
 
 ---
 
@@ -437,7 +433,7 @@ ggplot(plot_data, aes(x, y)) +
 - If your test has **d.f. = 2**, the critical value at p = 0.05 is about **5.99**.
 - If your observed χ² is **larger** than this, p < 0.05 and you **reject H₀**.
 
-SPSS does this comparison for you and reports:
+R does this comparison for you and reports:
 
 - The **χ² statistic**.
 - The **d.f.**.
@@ -464,13 +460,13 @@ If p had been ≥ 0.05, we would conclude:
 > There was **no evidence of an association** between gender and mode of transport  
 > (χ² = …, d.f. = 2, *p* = …, *N* = 95).
 
-In SPSS, these are read from the **Chi-Square Tests** table and the **Crosstabulation** table.
+
 
 ---
 
 ## Putting it together: what to look for in output
 
-For almost any test you run (correlation, t-test, ANOVA, chi-square), SPSS output will always give you:
+For almost any test you run (correlation, t-test, ANOVA, chi-square), R output will always give you:
 
 1. A **test statistic** (r, t, F, χ², etc.).
 2. **Degrees of freedom** (df).

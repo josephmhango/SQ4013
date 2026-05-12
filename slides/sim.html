@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sampling, Regression, and t-values</title>
+  <style>
+    :root {
+      --bg: #f7f7fb;
+      --panel: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #d1d5db;
+      --accent: #2563eb;
+      --danger: #dc2626;
+      --good: #059669;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    header {
+      padding: 28px 32px 18px;
+      background: linear-gradient(135deg, #ffffff, #eef2ff);
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 3vw, 2.4rem);
+      line-height: 1.1;
+    }
+
+    header p {
+      margin: 0;
+      max-width: 1000px;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.55;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      padding: 18px;
+    }
+
+    @media (max-width: 1050px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .controls {
+      padding: 18px;
+      align-self: start;
+      position: sticky;
+      top: 12px;
+    }
+
+    @media (max-width: 1050px) {
+      .controls { position: static; }
+    }
+
+    .control-group {
+      padding: 14px 0;
+      border-bottom: 1px solid #eceff3;
+    }
+
+    .control-group:last-child { border-bottom: none; }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    label span {
+      font-weight: 700;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] { width: 100%; }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.35;
+      margin-top: 6px;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 13px;
+      padding: 12px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      transition: transform 0.08s ease, opacity 0.12s ease;
+    }
+
+    button.secondary { background: #111827; }
+
+    button.ghost {
+      grid-column: 1 / -1;
+      background: #eef2ff;
+      color: #1e3a8a;
+      border: 1px solid #c7d2fe;
+    }
+
+    button:hover { opacity: 0.92; }
+    button:active { transform: translateY(1px); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      padding: 18px;
+      min-height: 420px;
+    }
+
+    .wide { grid-column: 1 / -1; }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+    }
+
+    .card p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.95rem;
+    }
+
+    canvas {
+      width: 100%;
+      height: 310px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #eef2f7;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 12px 0 2px;
+    }
+
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .stat {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 10px;
+      background: #fafafa;
+    }
+
+    .stat .name {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+
+    .stat .value {
+      font-size: 1.18rem;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .interpretation, .test-panel {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      line-height: 1.45;
+    }
+
+    .test-panel.pass { border-color: #bbf7d0; background: #f0fdf4; }
+    .test-panel.fail { border-color: #fecaca; background: #fef2f2; }
+
+    .interpretation strong { color: var(--ink); }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: center;
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .key {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .swatch {
+      width: 14px;
+      height: 10px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .footer-note {
+      padding: 0 18px 22px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    code {
+      background: #f3f4f6;
+      padding: 1px 5px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>From a population relationship to a sample t-test</h1>
+    <p>
+      Build a synthetic population with a chosen relationship between <em>x</em> and <em>y</em>, draw a sample, fit a simple regression, and compare the sample slope's t-value against a t-distribution. Then repeat the sampling many times to see how unstable or stable the t-value is at that sample size.
+    </p>
+  </header>
+
+  <main>
+    <section class="controls panel">
+      <div class="control-group">
+        <label for="popSize">Population size <span id="popSizeVal"></span></label>
+        <input id="popSize" type="range" min="100" max="10000" step="100" value="2500" />
+        <div class="hint">The hidden population from which all samples are drawn.</div>
+      </div>
+
+      <div class="control-group">
+        <label for="slope">Relationship strength and direction <span id="slopeVal"></span></label>
+        <input id="slope" type="range" min="-3" max="3" step="0.1" value="1.2" />
+        <div class="hint">This is the true population slope. Negative values reverse the direction.</div>
+      </div>
+
+      <div class="control-group">
+        <label for="noise">Uniform noise width <span id="noiseVal"></span></label>
+        <input id="noise" type="range" min="0" max="8" step="0.1" value="2.2" />
+        <div class="hint">Noise is added as random error from a uniform distribution. Large noise can hide even a real relationship.</div>
+      </div>
+
+      <div class="control-group">
+        <label for="sampleSize">Sample size <span id="sampleSizeVal"></span></label>
+        <input id="sampleSize" type="range" min="5" max="500" step="1" value="35" />
+        <div class="hint">The number of observations drawn from the population for one regression.</div>
+      </div>
+
+      <div class="control-group">
+        <label for="alpha">Significance level, alpha <span id="alphaVal"></span></label>
+        <input id="alpha" type="range" min="0.001" max="0.20" step="0.001" value="0.05" />
+        <div class="hint">Two-sided threshold: the shaded rejection regions are alpha/2 in each tail.</div>
+      </div>
+
+      <div class="control-group">
+        <label for="simCount">Repeated samples <span id="simCountVal"></span></label>
+        <input id="simCount" type="range" min="100" max="5000" step="100" value="1000" />
+        <div class="hint">How many new samples are drawn for the empirical t-value histogram.</div>
+      </div>
+
+      <div class="button-row">
+        <button id="newPop" type="button">New population</button>
+        <button id="drawSample" type="button" class="secondary">Draw sample</button>
+        <button id="runSims" type="button" class="ghost">Run repeated samples</button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card panel">
+        <h2>1. Population and selected sample</h2>
+        <p>The faint points are the full population. The darker points are the current random sample. The line is the sample regression line.</p>
+        <canvas id="scatterCanvas" width="760" height="460"></canvas>
+        <div class="legend">
+          <span class="key"><span class="swatch" style="background:#cbd5e1"></span>population</span>
+          <span class="key"><span class="swatch" style="background:#2563eb"></span>sample</span>
+          <span class="key"><span class="swatch" style="background:#dc2626"></span>sample regression line</span>
+        </div>
+      </article>
+
+      <article class="card panel">
+        <h2>2. Regression result from this sample</h2>
+        <p>The t-value asks how many estimated standard errors the sample slope is away from zero.</p>
+        <div class="stats">
+          <div class="stat"><div class="name">sample slope</div><div class="value" id="bVal">–</div></div>
+          <div class="stat"><div class="name">SE(slope)</div><div class="value" id="seVal">–</div></div>
+          <div class="stat"><div class="name">t-value</div><div class="value" id="tVal">–</div></div>
+          <div class="stat"><div class="name">df</div><div class="value" id="dfVal">–</div></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="name">sample r</div><div class="value" id="rVal">–</div></div>
+          <div class="stat"><div class="name">two-sided p</div><div class="value" id="pVal">–</div></div>
+          <div class="stat"><div class="name">critical t</div><div class="value" id="critVal">–</div></div>
+          <div class="stat"><div class="name">decision</div><div class="value" id="decisionVal">–</div></div>
+        </div>
+        <div class="interpretation" id="interpretation"></div>
+      </article>
+
+      <article class="card panel">
+        <h2>3. The reference t-distribution under the null</h2>
+        <p>If the true population slope were zero, t-values would follow this t-distribution with <code>df = n - 2</code>. The shaded tails show the Type I error rate chosen by alpha.</p>
+        <canvas id="tCanvas" width="760" height="460"></canvas>
+        <div class="legend">
+          <span class="key"><span class="swatch" style="background:#fecaca"></span>rejection regions</span>
+          <span class="key"><span class="swatch" style="background:#111827"></span>t-distribution</span>
+          <span class="key"><span class="swatch" style="background:#2563eb"></span>sample t-value</span>
+        </div>
+      </article>
+
+      <article class="card panel">
+        <h2>4. Repeated samples from the same population</h2>
+        <p>This histogram shows t-values obtained by repeatedly drawing samples of the same size from the population you created. The red vertical lines are the two-sided critical t-values; the blue line is the t-value from your current sample.</p>
+        <canvas id="histCanvas" width="760" height="460"></canvas>
+        <div class="stats">
+          <div class="stat"><div class="name">% significant</div><div class="value" id="sigRateVal">–</div></div>
+          <div class="stat"><div class="name">% at least as extreme as current t</div><div class="value" id="extremeRateVal">–</div></div>
+          <div class="stat"><div class="name">mean simulated t</div><div class="value" id="meanTVal">–</div></div>
+          <div class="stat"><div class="name">SD simulated t</div><div class="value" id="sdTVal">–</div></div>
+        </div>
+      </article>
+
+      <article class="card panel wide">
+        <h2>Notes</h2>
+        <p>
+          Start by setting the true population slope to zero. In that case, there is no real relationship between <em>x</em> and <em>y</em>. If you run many repeated samples, only about the chosen alpha level should cross the red critical lines. For example, with alpha = 0.05, roughly 5% of samples should be called significant just by chance.
+        </p>
+        <p>
+          Then increase the slope. Now there is a real relationship in the population. If the sample size is large enough and the noise is not too strong, more simulated t-values should move beyond the red critical lines. This is the idea of statistical power: how often a test detects an effect when an effect is really there.
+        </p>
+        <p>
+          Remember what a significant result means. It means your sample t-value landed somewhere that would be unusual if the true slope were zero. It does <strong>not</strong> mean there is only a 5% chance that the null hypothesis is true. Alpha is the long-run false-positive rate of the decision rule.
+        </p>
+        <div id="testPanel" class="test-panel">Startup checks have not run yet.</div>
+      </article>
+    </section>
+  </main>
+
+  <div class="footer-note">
+    Try this sequence: set the true slope to zero, run repeated samples, and watch how often chance alone produces significant results. Then increase the slope, sample size, and noise separately to see how each one changes the chance of detecting an effect.
+  </div>
+
+  <script>
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', initApp);
+
+    function initApp() {
+      const requiredIds = [
+        'popSize', 'slope', 'noise', 'sampleSize', 'alpha', 'simCount',
+        'popSizeVal', 'slopeVal', 'noiseVal', 'sampleSizeVal', 'alphaVal', 'simCountVal',
+        'bVal', 'seVal', 'tVal', 'dfVal', 'rVal', 'pVal', 'critVal', 'decisionVal',
+        'interpretation', 'sigRateVal', 'extremeRateVal', 'meanTVal', 'sdTVal',
+        'scatterCanvas', 'tCanvas', 'histCanvas', 'newPop', 'drawSample', 'runSims', 'testPanel'
+      ];
+
+      const els = Object.fromEntries(requiredIds.map(id => [id, document.getElementById(id)]));
+      const missingIds = requiredIds.filter(id => !els[id]);
+
+      if (missingIds.length > 0) {
+        const message = `Cannot start simulation. Missing HTML element IDs: ${missingIds.join(', ')}`;
+        console.error(message);
+        document.body.insertAdjacentHTML(
+          'afterbegin',
+          `<div style="margin:18px;padding:14px;border:2px solid #dc2626;border-radius:12px;background:#fef2f2;color:#7f1d1d;font-weight:700;">${message}</div>`
+        );
+        return;
+      }
+
+      const state = {
+        population: [],
+        sample: [],
+        regression: null,
+        tValues: []
+      };
+
+      function fmt(x, digits = 3) {
+        if (!Number.isFinite(x)) return '–';
+        if (Math.abs(x) < 0.001 && x !== 0) return x.toExponential(1);
+        return x.toFixed(digits);
+      }
+
+      function clamp(x, a, b) {
+        return Math.max(a, Math.min(b, x));
+      }
+
+      function uniform(a, b) {
+        return a + Math.random() * (b - a);
+      }
+
+      function updateLabels() {
+        els.popSizeVal.textContent = Number(els.popSize.value).toLocaleString();
+        els.slopeVal.textContent = Number(els.slope.value).toFixed(1);
+        els.noiseVal.textContent = Number(els.noise.value).toFixed(1);
+        els.sampleSizeVal.textContent = els.sampleSize.value;
+        els.alphaVal.textContent = Number(els.alpha.value).toFixed(3);
+        els.simCountVal.textContent = Number(els.simCount.value).toLocaleString();
+      }
+
+      function generatePopulation() {
+        const N = Number(els.popSize.value);
+        const slope = Number(els.slope.value);
+        const noise = Number(els.noise.value);
+        state.population = [];
+
+        for (let i = 0; i < N; i++) {
+          const x = uniform(-1, 1);
+          const e = uniform(-noise, noise);
+          const y = slope * x + e;
+          state.population.push({ x, y });
+        }
+
+        state.tValues = [];
+        drawSample(false);
+        drawHistogram();
+      }
+
+      function sampleWithoutReplacement(arr, n) {
+        const out = [];
+        const used = new Set();
+        const target = Math.min(n, arr.length);
+
+        while (out.length < target) {
+          const idx = Math.floor(Math.random() * arr.length);
+          if (!used.has(idx)) {
+            used.add(idx);
+            out.push(arr[idx]);
+          }
+        }
+        return out;
+      }
+
+      function drawSample(clearSimulations = true) {
+        const n = Math.max(3, Number(els.sampleSize.value));
+        if (clearSimulations) state.tValues = [];
+        state.sample = sampleWithoutReplacement(state.population, n);
+        state.regression = regression(state.sample);
+        renderAll(true);
+      }
+
+      function regression(data) {
+        const n = data.length;
+        if (n < 3) return emptyRegression(n);
+
+        const meanX = data.reduce((s, d) => s + d.x, 0) / n;
+        const meanY = data.reduce((s, d) => s + d.y, 0) / n;
+        let sxx = 0, syy = 0, sxy = 0;
+
+        for (const d of data) {
+          const dx = d.x - meanX;
+          const dy = d.y - meanY;
+          sxx += dx * dx;
+          syy += dy * dy;
+          sxy += dx * dy;
+        }
+
+        if (sxx <= 0 || syy <= 0) return emptyRegression(n);
+
+        const b = sxy / sxx;
+        const a = meanY - b * meanX;
+        let sse = 0;
+
+        for (const d of data) {
+          const resid = d.y - (a + b * d.x);
+          sse += resid * resid;
+        }
+
+        const df = n - 2;
+        const mse = sse / df;
+        const se = Math.sqrt(mse / sxx);
+        const t = se > 0 ? b / se : (b === 0 ? 0 : Math.sign(b) * Infinity);
+        const r = sxy / Math.sqrt(sxx * syy);
+        const p = Number.isFinite(t) ? 2 * (1 - studentTCdf(Math.abs(t), df)) : 0;
+
+        return { a, b, se, t, df, r, p };
+      }
+
+      function emptyRegression(n) {
+        return { a: 0, b: NaN, se: NaN, t: NaN, df: Math.max(0, n - 2), r: NaN, p: NaN };
+      }
+
+      function logGamma(z) {
+        const p = [
+          676.5203681218851,
+          -1259.1392167224028,
+          771.32342877765313,
+          -176.61502916214059,
+          12.507343278686905,
+          -0.13857109526572012,
+          9.9843695780195716e-6,
+          1.5056327351493116e-7
+        ];
+
+        if (z < 0.5) {
+          return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
+        }
+
+        z -= 1;
+        let x = 0.99999999999980993;
+        for (let i = 0; i < p.length; i++) x += p[i] / (z + i + 1);
+        const t = z + p.length - 0.5;
+        return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+      }
+
+      function studentTPdf(x, df) {
+        const v = df;
+        if (v <= 0) return NaN;
+        const logNum = logGamma((v + 1) / 2);
+        const logDen = 0.5 * Math.log(v * Math.PI) + logGamma(v / 2);
+        return Math.exp(logNum - logDen) * Math.pow(1 + (x * x) / v, -(v + 1) / 2);
+      }
+
+      function simpsonIntegral(f, a, b, n = 200) {
+        if (n % 2 !== 0) n += 1;
+        const h = (b - a) / n;
+        let sum = f(a) + f(b);
+        for (let i = 1; i < n; i++) {
+          sum += f(a + i * h) * (i % 2 === 0 ? 2 : 4);
+        }
+        return (h / 3) * sum;
+      }
+
+      function studentTCdf(x, df) {
+        if (df <= 0) return NaN;
+        if (!Number.isFinite(x)) return x < 0 ? 0 : 1;
+        if (x === 0) return 0.5;
+        const sign = x < 0 ? -1 : 1;
+        const ax = Math.abs(x);
+        const upper = Math.min(ax, 30);
+        const area = simpsonIntegral(z => studentTPdf(z, df), 0, upper, 300);
+        return sign > 0 ? 0.5 + area : 0.5 - area;
+      }
+
+      function studentTInv(p, df) {
+        if (p <= 0) return -Infinity;
+        if (p >= 1) return Infinity;
+        if (df <= 0) return NaN;
+        let lo = -30, hi = 30;
+        for (let i = 0; i < 60; i++) {
+          const mid = (lo + hi) / 2;
+          if (studentTCdf(mid, df) < p) lo = mid;
+          else hi = mid;
+        }
+        return (lo + hi) / 2;
+      }
+
+      function clearCanvas(ctx, canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function drawAxes(ctx, W, H, pad, xLabel = '', yLabel = '') {
+        ctx.strokeStyle = '#d1d5db';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pad, H - pad);
+        ctx.lineTo(W - pad, H - pad);
+        ctx.moveTo(pad, pad);
+        ctx.lineTo(pad, H - pad);
+        ctx.stroke();
+
+        ctx.fillStyle = '#111827';
+        ctx.font = '14px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText(xLabel, W / 2, H - 8);
+
+        ctx.save();
+        ctx.translate(14, H / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(yLabel, 0, 0);
+        ctx.restore();
+
+        ctx.textAlign = 'left';
+      }
+
+      function drawNumericTicks(ctx, opts) {
+        const { W, H, pad, xMin, xMax, yMin, yMax, xScale, yScale, xTicks = 5, yTicks = 5, yFormatter = v => fmt(v, 1), xFormatter = v => fmt(v, 1), grid = true } = opts;
+        ctx.save();
+        ctx.font = '12px system-ui';
+        ctx.fillStyle = '#6b7280';
+        ctx.strokeStyle = '#eef2f7';
+        ctx.lineWidth = 1;
+
+        if (grid) {
+          for (let i = 1; i <= yTicks; i++) {
+            const y = yMin + (i / yTicks) * (yMax - yMin);
+            const py = yScale(y);
+            ctx.beginPath();
+            ctx.moveTo(pad, py);
+            ctx.lineTo(W - pad, py);
+            ctx.stroke();
+          }
+          for (let i = 1; i <= xTicks; i++) {
+            const x = xMin + (i / xTicks) * (xMax - xMin);
+            const px = xScale(x);
+            ctx.beginPath();
+            ctx.moveTo(px, pad);
+            ctx.lineTo(px, H - pad);
+            ctx.stroke();
+          }
+        }
+
+        ctx.strokeStyle = '#9ca3af';
+        ctx.fillStyle = '#4b5563';
+        ctx.textAlign = 'center';
+        for (let i = 0; i <= xTicks; i++) {
+          const x = xMin + (i / xTicks) * (xMax - xMin);
+          const px = xScale(x);
+          ctx.beginPath();
+          ctx.moveTo(px, H - pad);
+          ctx.lineTo(px, H - pad + 5);
+          ctx.stroke();
+          ctx.fillText(xFormatter(x), px, H - pad + 20);
+        }
+
+        ctx.textAlign = 'right';
+        for (let i = 0; i <= yTicks; i++) {
+          const y = yMin + (i / yTicks) * (yMax - yMin);
+          const py = yScale(y);
+          ctx.beginPath();
+          ctx.moveTo(pad - 5, py);
+          ctx.lineTo(pad, py);
+          ctx.stroke();
+          ctx.fillText(yFormatter(y), pad - 8, py + 4);
+        }
+        ctx.restore();
+      }
+
+      function drawScatter() {
+        const canvas = els.scatterCanvas;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height, pad = 42;
+        clearCanvas(ctx, canvas);
+        drawAxes(ctx, W, H, pad, 'x value', 'y value');
+
+        const all = state.population;
+        const sample = state.sample;
+        if (!all.length) return;
+
+        const ys = all.map(d => d.y);
+        const yMin = Math.min(...ys);
+        const yMax = Math.max(...ys);
+        const yPad = Math.max(0.2, (yMax - yMin) * 0.08);
+        const denom = Math.max(1e-9, (yMax + yPad) - (yMin - yPad));
+        const plotYMin = yMin - yPad;
+        const plotYMax = yMax + yPad;
+        const xScale = x => pad + ((x + 1) / 2) * (W - 2 * pad);
+        const yScale = y => H - pad - ((y - plotYMin) / denom) * (H - 2 * pad);
+        drawNumericTicks(ctx, {
+          W, H, pad,
+          xMin: -1,
+          xMax: 1,
+          yMin: plotYMin,
+          yMax: plotYMax,
+          xScale,
+          yScale,
+          xTicks: 4,
+          yTicks: 5,
+          xFormatter: v => fmt(v, 1),
+          yFormatter: v => fmt(v, 1)
+        });
+
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = '#cbd5e1';
+        const step = Math.max(1, Math.floor(all.length / 1800));
+        for (let i = 0; i < all.length; i += step) {
+          const d = all[i];
+          ctx.beginPath();
+          ctx.arc(xScale(d.x), yScale(d.y), 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        ctx.fillStyle = '#2563eb';
+        for (const d of sample) {
+          ctx.beginPath();
+          ctx.arc(xScale(d.x), yScale(d.y), 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        if (state.regression && Number.isFinite(state.regression.b)) {
+          const { a, b } = state.regression;
+          const x1 = -1, x2 = 1;
+          const y1 = a + b * x1;
+          const y2 = a + b * x2;
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(xScale(x1), yScale(y1));
+          ctx.lineTo(xScale(x2), yScale(y2));
+          ctx.stroke();
+        }
+      }
+
+      function drawTDistribution() {
+        const canvas = els.tCanvas;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height, pad = 42;
+        clearCanvas(ctx, canvas);
+        drawAxes(ctx, W, H, pad, 't-value from regression slope', 'probability density');
+
+        const reg = state.regression;
+        if (!reg || reg.df <= 0) return;
+
+        const df = reg.df;
+        const alpha = Number(els.alpha.value);
+        const crit = studentTInv(1 - alpha / 2, df);
+        const tObs = reg.t;
+        const visibleT = Number.isFinite(tObs) ? Math.abs(tObs) : Math.abs(crit) + 3;
+        const xMin = -Math.max(5, Math.ceil(Math.max(visibleT, crit) + 1));
+        const xMax = -xMin;
+        const maxY = studentTPdf(0, df) * 1.08;
+        const xScale = x => pad + ((x - xMin) / (xMax - xMin)) * (W - 2 * pad);
+        const yScale = y => H - pad - (y / maxY) * (H - 2 * pad);
+        drawNumericTicks(ctx, {
+          W, H, pad,
+          xMin,
+          xMax,
+          yMin: 0,
+          yMax: maxY,
+          xScale,
+          yScale,
+          xTicks: 6,
+          yTicks: 4,
+          xFormatter: v => fmt(v, 1),
+          yFormatter: v => fmt(v, 2)
+        });
+
+        function pathCurve(from, to, fill) {
+          ctx.beginPath();
+          ctx.moveTo(xScale(from), yScale(0));
+          const steps = 220;
+          for (let i = 0; i <= steps; i++) {
+            const x = from + (to - from) * i / steps;
+            ctx.lineTo(xScale(x), yScale(studentTPdf(x, df)));
+          }
+          ctx.lineTo(xScale(to), yScale(0));
+          ctx.closePath();
+          if (fill) ctx.fill(); else ctx.stroke();
+        }
+
+        ctx.fillStyle = '#fecaca';
+        pathCurve(xMin, -crit, true);
+        pathCurve(crit, xMax, true);
+
+        ctx.strokeStyle = '#111827';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        const steps = 400;
+        for (let i = 0; i <= steps; i++) {
+          const x = xMin + (xMax - xMin) * i / steps;
+          const px = xScale(x), py = yScale(studentTPdf(x, df));
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        ctx.strokeStyle = '#dc2626';
+        ctx.lineWidth = 2;
+        for (const c of [-crit, crit]) {
+          ctx.beginPath();
+          ctx.moveTo(xScale(c), yScale(0));
+          ctx.lineTo(xScale(c), yScale(studentTPdf(c, df)) + 2);
+          ctx.stroke();
+        }
+
+        if (Number.isFinite(tObs)) {
+          ctx.strokeStyle = '#2563eb';
+          ctx.lineWidth = 4;
+          const tx = clamp(tObs, xMin, xMax);
+          ctx.beginPath();
+          ctx.moveTo(xScale(tx), H - pad);
+          ctx.lineTo(xScale(tx), pad);
+          ctx.stroke();
+
+          ctx.fillStyle = '#2563eb';
+          ctx.font = '13px system-ui';
+          ctx.fillText(`sample t = ${fmt(tObs, 2)}`, xScale(tx) + 6, pad + 18);
+        }
+
+        ctx.fillStyle = '#111827';
+        ctx.font = '13px system-ui';
+        ctx.fillText(`critical ±${fmt(crit, 2)}`, xScale(crit) - 40, yScale(studentTPdf(crit, df)) - 8);
+      }
+
+      function drawHistogram() {
+        const canvas = els.histCanvas;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height, pad = 42;
+        clearCanvas(ctx, canvas);
+        drawAxes(ctx, W, H, pad, 't-value from each repeated sample', 'number of repeated samples');
+
+        if (!state.tValues.length || !state.regression) {
+          ctx.fillStyle = '#6b7280';
+          ctx.font = '16px system-ui';
+          ctx.fillText('Click “Run repeated samples” to build the histogram.', pad + 10, H / 2);
+          return;
+        }
+
+        const vals = state.tValues.filter(Number.isFinite);
+        if (!vals.length) return;
+
+        const tObs = state.regression.t;
+        const alpha = Number(els.alpha.value);
+        const crit = studentTInv(1 - alpha / 2, state.regression.df);
+        const maxAbs = Math.max(4, Math.ceil(Math.max(...vals.map(Math.abs), Number.isFinite(tObs) ? Math.abs(tObs) : 0, crit)));
+        const xMin = -maxAbs, xMax = maxAbs;
+        const bins = 42;
+        const counts = Array(bins).fill(0);
+
+        for (const v of vals) {
+          const idx = Math.floor(((clamp(v, xMin, xMax) - xMin) / (xMax - xMin)) * bins);
+          counts[Math.min(bins - 1, Math.max(0, idx))]++;
+        }
+
+        const yMax = Math.max(...counts) * 1.12 || 1;
+        const xScale = x => pad + ((x - xMin) / (xMax - xMin)) * (W - 2 * pad);
+        const yScale = y => H - pad - (y / yMax) * (H - 2 * pad);
+        drawNumericTicks(ctx, {
+          W, H, pad,
+          xMin,
+          xMax,
+          yMin: 0,
+          yMax,
+          xScale,
+          yScale,
+          xTicks: 6,
+          yTicks: 5,
+          xFormatter: v => fmt(v, 1),
+          yFormatter: v => String(Math.round(v))
+        });
+        const binW = (W - 2 * pad) / bins;
+
+        for (let i = 0; i < bins; i++) {
+          const x0 = xMin + (i / bins) * (xMax - xMin);
+          const x1 = xMin + ((i + 1) / bins) * (xMax - xMin);
+          const mid = (x0 + x1) / 2;
+          ctx.fillStyle = Number.isFinite(tObs) && Math.abs(mid) >= Math.abs(tObs) ? '#bfdbfe' : '#d1d5db';
+          ctx.fillRect(xScale(x0) + 1, yScale(counts[i]), binW - 2, H - pad - yScale(counts[i]));
+        }
+
+        ctx.strokeStyle = '#dc2626';
+        ctx.lineWidth = 2;
+        for (const c of [-crit, crit]) {
+          ctx.beginPath();
+          ctx.moveTo(xScale(c), H - pad);
+          ctx.lineTo(xScale(c), pad);
+          ctx.stroke();
+        }
+        ctx.fillStyle = '#dc2626';
+        ctx.font = '13px system-ui';
+        ctx.textAlign = 'left';
+        ctx.fillText(`-critical t = ${fmt(-crit, 2)}`, xScale(-crit) + 6, pad + 18);
+        ctx.fillText(`+critical t = ${fmt(crit, 2)}`, xScale(crit) + 6, pad + 36);
+
+        if (Number.isFinite(tObs)) {
+          ctx.strokeStyle = '#2563eb';
+          ctx.lineWidth = 4;
+          const tx = clamp(tObs, xMin, xMax);
+          ctx.beginPath();
+          ctx.moveTo(xScale(tx), H - pad);
+          ctx.lineTo(xScale(tx), pad);
+          ctx.stroke();
+          ctx.fillStyle = '#2563eb';
+          ctx.font = '13px system-ui';
+          ctx.textAlign = 'left';
+          ctx.fillText(`current sample t = ${fmt(tObs, 2)}`, xScale(tx) + 6, pad + 58);
+        }
+      }
+
+      function updateStats() {
+        const reg = state.regression;
+        if (!reg) return;
+
+        const alpha = Number(els.alpha.value);
+        const crit = studentTInv(1 - alpha / 2, reg.df);
+        const significant = Number.isFinite(reg.t) && Math.abs(reg.t) >= crit;
+
+        els.bVal.textContent = fmt(reg.b);
+        els.seVal.textContent = fmt(reg.se);
+        els.tVal.textContent = fmt(reg.t);
+        els.dfVal.textContent = reg.df;
+        els.rVal.textContent = fmt(reg.r);
+        els.pVal.textContent = fmt(reg.p, 4);
+        els.critVal.textContent = '±' + fmt(crit, 3);
+        els.decisionVal.textContent = significant ? 'significant' : 'not sig.';
+        els.decisionVal.style.color = significant ? '#dc2626' : '#059669';
+        els.interpretation.innerHTML = significant
+          ? `<strong>Decision:</strong> reject the null hypothesis of zero slope at alpha = ${alpha.toFixed(3)}. This sample slope is far enough from zero to fall in the shaded tail region of the null t-distribution.`
+          : `<strong>Decision:</strong> fail to reject the null hypothesis of zero slope at alpha = ${alpha.toFixed(3)}. This does not prove the slope is zero; it means this sample did not provide enough evidence under this rule.`;
+
+        const vals = state.tValues.filter(Number.isFinite);
+        if (vals.length) {
+          const sigRate = vals.filter(v => Math.abs(v) >= crit).length / vals.length;
+          const extremeRate = Number.isFinite(reg.t) ? vals.filter(v => Math.abs(v) >= Math.abs(reg.t)).length / vals.length : NaN;
+          const mean = vals.reduce((s, v) => s + v, 0) / vals.length;
+          const sd = vals.length > 1 ? Math.sqrt(vals.reduce((s, v) => s + (v - mean) ** 2, 0) / (vals.length - 1)) : 0;
+          els.sigRateVal.textContent = (100 * sigRate).toFixed(1) + '%';
+          els.extremeRateVal.textContent = Number.isFinite(extremeRate) ? (100 * extremeRate).toFixed(1) + '%' : '–';
+          els.meanTVal.textContent = fmt(mean);
+          els.sdTVal.textContent = fmt(sd);
+        } else {
+          els.sigRateVal.textContent = '–';
+          els.extremeRateVal.textContent = '–';
+          els.meanTVal.textContent = '–';
+          els.sdTVal.textContent = '–';
+        }
+      }
+
+      function runSimulations() {
+        const reps = Number(els.simCount.value);
+        const n = Math.max(3, Number(els.sampleSize.value));
+        state.tValues = [];
+
+        for (let i = 0; i < reps; i++) {
+          const s = sampleWithoutReplacement(state.population, n);
+          const reg = regression(s);
+          if (Number.isFinite(reg.t)) state.tValues.push(reg.t);
+        }
+
+        renderAll(true);
+      }
+
+      function renderAll(keepHist = true) {
+        updateLabels();
+        updateStats();
+        drawScatter();
+        drawTDistribution();
+        if (keepHist) drawHistogram();
+      }
+
+      function addSafeListener(element, eventName, handler) {
+        if (!element || typeof element.addEventListener !== 'function') {
+          console.error('Cannot attach listener:', eventName, element);
+          return false;
+        }
+        element.addEventListener(eventName, handler);
+        return true;
+      }
+
+      function attachEventListeners() {
+        [els.popSize, els.slope, els.noise].forEach(el => {
+          addSafeListener(el, 'input', updateLabels);
+          addSafeListener(el, 'change', generatePopulation);
+        });
+
+        addSafeListener(els.sampleSize, 'input', updateLabels);
+        addSafeListener(els.sampleSize, 'change', () => drawSample(true));
+
+        addSafeListener(els.alpha, 'input', () => renderAll(true));
+        addSafeListener(els.simCount, 'input', updateLabels);
+        addSafeListener(els.newPop, 'click', generatePopulation);
+        addSafeListener(els.drawSample, 'click', () => drawSample(true));
+        addSafeListener(els.runSims, 'click', runSimulations);
+      }
+
+      function runStartupTests() {
+        const results = [];
+        const assert = (name, condition) => results.push({ name, pass: Boolean(condition) });
+
+        assert('All required DOM elements exist', missingIds.length === 0);
+
+        const tinyPop = Array.from({ length: 20 }, (_, i) => ({ x: -1 + i / 10, y: 2 * (-1 + i / 10) + 1 }));
+        const tinySample = sampleWithoutReplacement(tinyPop, 10);
+        assert('Sampling returns the requested number of rows', tinySample.length === 10);
+        assert('Sampling has no repeated object references', new Set(tinySample).size === tinySample.length);
+
+        const almostPerfect = tinyPop.map((d, i) => ({ x: d.x, y: d.y + (i % 2 === 0 ? 0.001 : -0.001) }));
+        const reg = regression(almostPerfect);
+        assert('Regression returns a positive slope for a positive relation', reg.b > 0);
+        assert('Regression returns df = n - 2', reg.df === almostPerfect.length - 2);
+        assert('t CDF at zero is approximately 0.5', Math.abs(studentTCdf(0, 10) - 0.5) < 1e-10);
+        assert('Two-sided 5% critical value is positive', studentTInv(0.975, 10) > 0);
+
+        const allPassed = results.every(r => r.pass);
+        els.testPanel.classList.toggle('pass', allPassed);
+        els.testPanel.classList.toggle('fail', !allPassed);
+        els.testPanel.innerHTML = `<strong>Startup checks:</strong> ${results.filter(r => r.pass).length}/${results.length} passed.<br>` +
+          results.map(r => `${r.pass ? '✅' : '❌'} ${r.name}`).join('<br>');
+
+        if (!allPassed) console.warn('Startup test failures:', results.filter(r => !r.pass));
+      }
+
+      attachEventListeners();
+      updateLabels();
+      generatePopulation();
+      runStartupTests();
+    }
+  </script>
+</body>
+</html>
