@@ -13,6 +13,7 @@ format:
     margin: 0.08
 execute:
   echo: true
+  code-fold: true
   warning: false
   message: false
 ---
